@@ -1,0 +1,38 @@
+﻿@inherits LayoutComponentBase
+@using CDPModule1.Client.Services
+@inject ILocalStorageService localStorageService;
+
+<div class="page">
+
+    <div style='@loginDisplay'>
+        <Login />
+    </div>
+    <div class="sidebar" style='@MenuDisplay'>
+        <NavMenu />
+    </div>
+
+    <main>
+      @*  <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>*@
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+    string token = string.Empty;
+    string loginDisplay = string.Empty;
+     string MenuDisplay = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await localStorageService.GetItem<string>("token");
+        loginDisplay = string.IsNullOrEmpty(token) ? "display : block " : "display: none";
+        MenuDisplay = string.IsNullOrEmpty(token) ? "display :  none" : "display: block";
+    }
+
+
+}

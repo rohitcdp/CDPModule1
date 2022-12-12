@@ -1,0 +1,73 @@
+﻿@page "/add_user"
+
+@using CDPModule1.Shared
+@using CDPModule1.Shared.RequestModel
+@using System.Text
+@inject HttpClient httpClient
+
+<PageTitle>Index</PageTitle>
+
+<h1>Add Tenant</h1>
+
+
+<EditForm Model="user" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="email" class="col-md-2 col-form-label">Email:</label>
+        <div class="col-md-10">
+            <InputText id="email" class="form-control" @bind-Value="user.Email" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+    </div>
+     <div class="form-group row">
+        <label for="confirm" class="col-md-2 col-form-label">Name:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="user.Name" />
+            <ValidationMessage For="@(() => user.Name)" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="password" class="col-md-2 col-form-label">Password:</label>
+        <div class="col-md-10">
+            <InputText type="password" id="password" class="form-control" @bind-Value="user.Password" />
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
+        </div>
+
+         <div class="form-group row">
+        <label for="user_type" class="col-md-2 col-form-label">Is Admin:</label>
+        <div class="col-md-10">
+           <InputCheckbox @bind-Value=@isAdmin />
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Register</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code{
+     AccountModal user = new AccountModal();
+     bool isAdmin = false;
+
+    public async void Save()
+    {
+        Console.WriteLine(user.Name);
+        user.UserType = isAdmin ? "Admin" : "Tenant";       
+        var result = await httpClient.PostAsJsonAsync("api/Account/Register", user);
+        ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+        if(responseModal?.StatusCode == 200)
+        {
+            reset();            
+        }
+    }
+
+    public void reset()
+    {
+        user = new AccountModal();
+     }
+}
+

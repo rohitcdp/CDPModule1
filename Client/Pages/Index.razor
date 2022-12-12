@@ -1,0 +1,58 @@
+﻿@page "/"
+
+@using CDPModule1.Client.Services
+@using CDPModule1.Shared.RequestModel
+@using CDPModule1.Shared
+@using System.Text
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+
+<h1>Login</h1>
+<EditForm Model="login" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="email" class="col-md-2 col-form-label">Email:</label>
+        <div class="col-md-10">
+            <InputText id="email" class="form-control" @bind-Value="login.Email" />
+            <ValidationMessage For="@(() => login.Email)" />
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label for="password" class="col-md-2 col-form-label">Password:</label>
+        <div class="col-md-10">
+            <InputText type="password" id="password" class="form-control" @bind-Value="login.Password" />
+            <ValidationMessage For="@(() => login.Password)" />
+        </div>
+     </div>
+   
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">LOGIN</button>
+        </div>
+    </div>
+</EditForm>
+<p>@message</p>
+
+@code{
+    AccountModal login = new AccountModal();
+    bool isAdmin = false;
+    string message = string.Empty;
+
+    public async void Save()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/Account/Login", login);
+        ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+        if(responseModal?.StatusCode == 200)
+        {
+            message = responseModal.Message;
+            await localStorageService.SetItem("token", responseModal.Data);
+            reset();
+        }
+    }
+
+    public void reset()
+    {
+        login =  new AccountModal();
+     }
+}
