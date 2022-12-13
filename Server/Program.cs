@@ -1,4 +1,5 @@
 using CDPModule1.Server;
+using CDPModule1.Server.DataSeed;
 using CDPModule1.Server.IRepository;
 using CDPModule1.Server.IServices;
 using CDPModule1.Server.Repository;
@@ -56,6 +57,14 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+
+    var context = scope.ServiceProvider.GetRequiredService<CDPDbContext>();
+    await SeedData.SeedAdminData(context);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
