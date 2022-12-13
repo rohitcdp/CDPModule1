@@ -6,9 +6,9 @@
 
         public const string FAILED = "Failed";
 
-        public const string USER_EXISTS = "User_Exists";
+        public const string USER_EXISTS = "User Exists";
 
-        public const string USER_NOT_EXISTS = "User_Not_Exists";
+        public const string USER_NOT_EXISTS = "User Not Exists";
 
         public const string INVALID_PASSWORD = "Invalid Password";
     }
