@@ -15,7 +15,7 @@
 
     <main style='@MenuDisplay'>
         <div class="top-row px-4">
-            <button type="submit" class="btn btn-success" onclick="@logout">Logout</button>
+            <button type="submit" class="btn btn-success" @onclick="logout">Logout</button>
         </div>
 
         <article class="content px-4">
@@ -26,8 +26,13 @@
 
 @code{
     string token = string.Empty;
-    string loginDisplay = string.Empty;
-    string MenuDisplay = string.Empty;
+    [Parameter]
+    public string loginDisplay { get; set; }
+    [Parameter]
+    public string MenuDisplay
+    {
+        get; set;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,11 +41,11 @@
         MenuDisplay = string.IsNullOrEmpty(token) ? "display :  none" : "display: block";
     }
 
-    public async void logout()
+    public async Task logout()
     {
-        await localStorageService.RemoveItem("token");
         loginDisplay = "display : block ";
-         MenuDisplay =  "display :  none" ;
+        MenuDisplay = "display :  none";
+        await localStorageService.RemoveItem("token");
+        token = string.Empty;
     }
-
 }

@@ -1,16 +1,18 @@
 ﻿@page "/add_user"
 
+@using CDPModule1.Client.Services;
 @using CDPModule1.Shared
 @using CDPModule1.Shared.RequestModel
 @using System.Text
 @inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
 
 <PageTitle>Index</PageTitle>
 
 <h1>Add Tenant</h1>
 
 
-<EditForm Model="user" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
+<EditForm Model="@user" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
     <div class="form-group row">
         <label for="email" class="col-md-2 col-form-label">Email:</label>
@@ -48,10 +50,22 @@
     </div>
 </EditForm>
 
+<p>@Message</p>
 
 @code {
-    AccountModal user = new AccountModal();
-    bool isAdmin = false;
+    [Parameter]
+    public AccountModal user { get; set; }
+    [Parameter]
+    public bool isAdmin { get; set; }
+    [Parameter]
+    public string Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAdmin = false;
+        user = new AccountModal();
+        Message = string.Empty;
+    }
 
     public async void Save()
     {
@@ -59,22 +73,23 @@
         {
             Console.WriteLine(user.Name);
             user.UserType = isAdmin ? "Admin" : "Tenant";
+            string token = await localStorageService.GetItem<string>("token");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.PostAsJsonAsync("api/Account/Register", user);
             ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
             if (responseModal?.StatusCode == 200)
             {
-                reset();
+                user.Email = string.Empty;
+                user.Name = string.Empty;
+                user.UserType = string.Empty;
+                user.Password = string.Empty;
+                isAdmin = false;
+                Message = responseModal.Message;
             }
         }
         catch (Exception ex)
         {
-
+            Console.WriteLine(ex.Message);
         }
     }
-
-    public void reset()
-    {
-        user = new AccountModal();
-    }
 }
-
