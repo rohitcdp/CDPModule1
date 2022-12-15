@@ -1,12 +1,27 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using CDPModule1.Client.Services;
+@inject ILocalStorageService localStorageService;
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <RouteView RouteData="@routeData" DefaultLayout="this.LayoutType"  />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
+        <LayoutView Layout="@typeof(Login)">
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
-    </NotFound>
+    </NotFound>    
 </Router>
+
+@code{
+    [Parameter]
+    public string token { get; set; }
+    private Type LayoutType = typeof(MainLayout);
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await localStorageService.GetItem<string>("token");
+        LayoutType = string.IsNullOrEmpty(token) ? typeof(Login) : typeof(MainLayout);
+    }
+} 

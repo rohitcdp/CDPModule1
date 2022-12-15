@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@page "/login"
 
 @using CDPModule1.Client.Services
 @using CDPModule1.Shared.RequestModel
@@ -8,6 +9,7 @@
 @inject ILocalStorageService localStorageService;
 @inject NavigationManager NavManager
 
+<div class="page"> 
 <h1>Login</h1>
 <EditForm Model="login" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
@@ -34,6 +36,7 @@
     </div>
 </EditForm>
 <p>@message</p>
+</div> 
 
 @code{
     AccountModal login = new AccountModal();
@@ -44,10 +47,12 @@
     {
         var result = await httpClient.PostAsJsonAsync("api/Account/Login", login);
         ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
-        if(responseModal?.StatusCode == 200)
+        if(responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
         {
             message = responseModal.Message;
             await localStorageService.SetItem("token", responseModal.Data);
+            await localStorageService.SetItem("id", responseModal.Data);
+            await localStorageService.SetItem("userType", responseModal.Data);
             NavManager.NavigateTo("/",true);
         }
     }

@@ -3,17 +3,12 @@
 @inject ILocalStorageService localStorageService;
 @inject NavigationManager NavManager
 
-<div style='@loginDisplay'>
-        <Login />
- </div>
-
-<div class="page" >
-    
-    <div class="sidebar" style='@MenuDisplay'>
+<div class="page">     
+    <div class="sidebar">
         <NavMenu />
-    </div>
+     </div>
 
-    <main style='@MenuDisplay'>
+    <main>
         <div class="top-row px-4">
             <button type="submit" class="btn btn-success" @onclick="logout">Logout</button>
         </div>
@@ -25,27 +20,12 @@
 </div>
 
 @code{
-    string token = string.Empty;
-    [Parameter]
-    public string loginDisplay { get; set; }
-    [Parameter]
-    public string MenuDisplay
-    {
-        get; set;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        token = await localStorageService.GetItem<string>("token");
-        loginDisplay = string.IsNullOrEmpty(token) ? "display : block " : "display: none";
-        MenuDisplay = string.IsNullOrEmpty(token) ? "display :  none" : "display: block";
-    }
-
+    string token = string.Empty; 
+   
     public async Task logout()
     {
-        loginDisplay = "display : block ";
-        MenuDisplay = "display :  none";
         await localStorageService.RemoveItem("token");
         token = string.Empty;
+        NavManager.NavigateTo("/", true);
     }
 }
