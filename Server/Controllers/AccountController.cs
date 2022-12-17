@@ -48,5 +48,7 @@ namespace CDPModule1.Server.Controllers
                 return new ResponseModal { Data = result, Message = StatusConstant.SUCCESS, StatusCode = 200 };
             }
         }
+
+        public void ForgotPassword([FromBody] str)
     }
 }
