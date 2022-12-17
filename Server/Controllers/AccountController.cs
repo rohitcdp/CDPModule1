@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CDPModule1.Server.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-   
+    [ApiController]   
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -18,20 +17,20 @@ namespace CDPModule1.Server.Controllers
         }
 
         [HttpPost]
-        [Route("Register")]
-        [Authorize(Roles ="Admin")]
-        public ResponseModal Register([FromBody] AccountModal request)
-        {
-            Tenant user = new Tenant { Email = request.Email, Name = request.Name, Password = request.Password, UserType = request.UserType };
-            string result = _accountService.Register(user);
-            if (result.Equals(StatusConstant.USER_EXISTS))
-            {
-                return new ResponseModal { Data = null, Message = result, StatusCode = 200 };
-            }
-            else
-            {
-                return new ResponseModal { Data = result, Message = StatusConstant.SUCCESS, StatusCode = 200 };
-            }          
+        [Route("AddUser")]
+        [Authorize(Roles = Roles.Admin)]
+        public ResponseModal CreateUser([FromBody] User user)
+        { 
+
+            return _accountService.CreateUser(user).Result;           
+        }
+
+        [HttpPost]
+        [Route("AddTenant")]
+        [Authorize(Roles = Roles.Admin)]
+        public ResponseModal CreateTenant([FromBody] Tenant tenant)
+        {         
+           return _accountService.CreateTenant(tenant).Result;            
         }
 
         [HttpPost]
@@ -39,9 +38,8 @@ namespace CDPModule1.Server.Controllers
         [AllowAnonymous]
         public ResponseModal Login([FromBody] AccountModal loginReq)
         {
-            Tenant user = new Tenant { Email = loginReq.Email, Name = loginReq.Name, Password = loginReq.Password, UserType = loginReq.UserType };
-            string result = _accountService.Login(user);
-            if (result.Equals(StatusConstant.USER_NOT_EXISTS )|| result.Equals(StatusConstant.INVALID_PASSWORD))
+            string result = _accountService.Login(loginReq).Result;
+            if (result.Equals(StatusConstant.USER_NOT_EXISTS) || result.Equals(StatusConstant.INVALID_PASSWORD))
             {
                 return new ResponseModal { Data = null, Message = result, StatusCode = 200 };
             }

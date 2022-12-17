@@ -7,7 +7,7 @@
         //This method is used to check the user credentials
         public static bool IsValid(string username, string password)
         {
-            var users = dbContext.Tenants.ToList();
+            var users = dbContext.Users.ToList();
             return users.Any(user =>
                 user.Name.Equals(username, StringComparison.OrdinalIgnoreCase)
                 && user.Password == password);

@@ -4,9 +4,11 @@ namespace CDPModule1.Server.IRepository
 {
     public interface IAccountRepository
     {
-        string Register(Tenant user);
+       Task<User> CreateUser(User user);
 
-        Tenant? GetUserByMail(string email);
+       Task<Tenant> CreateTenant(Tenant tenant);
+
+        Task<User?> GetUserByMail(string email);
 
     }
 }

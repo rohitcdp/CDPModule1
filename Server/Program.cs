@@ -26,7 +26,9 @@ builder.Services.AddDbContext<CDPDbContext>(options => options.UseSqlServer(
 
 builder.Services.AddScoped(typeof(BaseEntity));
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<ITenantService, TenantService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 
 builder.Services.AddCors(options =>
 {
@@ -61,7 +63,6 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-
     var context = scope.ServiceProvider.GetRequiredService<CDPDbContext>();
     await SeedData.SeedAdminData(context);
 }

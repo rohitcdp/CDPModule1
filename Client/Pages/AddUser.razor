@@ -4,23 +4,19 @@
 @using CDPModule1.Shared
 @using CDPModule1.Shared.RequestModel
 @using System.Text
+@using System.Security.Claims;
+@using System.IdentityModel.Tokens.Jwt;
+
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
 <PageTitle>Index</PageTitle>
 
-<h1>Add Tenant</h1>
-
+<h1>Add User</h1>
 
 <EditForm Model="@user" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
-    <div class="form-group row">
-        <label for="email" class="col-md-2 col-form-label">Email:</label>
-        <div class="col-md-10">
-            <InputText id="email" class="form-control" @bind-Value="user.Email" />
-            <ValidationMessage For="@(() => user.Email)" />
-        </div>
-    </div>
+
     <div class="form-group row">
         <label for="confirm" class="col-md-2 col-form-label">Name:</label>
         <div class="col-md-10">
@@ -28,6 +24,15 @@
             <ValidationMessage For="@(() => user.Name)" />
         </div>
     </div>
+
+    <div class="form-group row">
+        <label for="email" class="col-md-2 col-form-label">Email:</label>
+        <div class="col-md-10">
+            <InputText type="email" id="email" class="form-control" @bind-Value="user.Email" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+    </div>
+
     <div class="form-group row">
         <label for="password" class="col-md-2 col-form-label">Password:</label>
         <div class="col-md-10">
@@ -37,15 +42,47 @@
     </div>
 
     <div class="form-group row">
-        <label for="user_type" class="col-md-2 col-form-label">Is Admin:</label>
+        <label for="address" class="col-md-2 col-form-label">Address:</label>
         <div class="col-md-10">
-            <InputCheckbox @bind-Value=@isAdmin />
+            <InputText id="address" class="form-control" @bind-Value="user.Address" />
+            <ValidationMessage For="@(() => user.Address)" />
         </div>
     </div>
 
+    <div class="form-group row">
+        <label for="dob" class="col-md-2 col-form-label">DOB:</label>
+        <div class="col-md-10">
+            <InputDate id="dob" class="form-control" @bind-Value="user.DOB" />
+            <ValidationMessage For="@(() => user.DOB)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="gender" class="col-md-2 col-form-label">Gender:</label>
+        <div class="col-md-10">
+            <InputText id="gender" class="form-control" @bind-Value="user.Gender" />
+            <ValidationMessage For="@(() => user.Gender)" />
+        </div>
+    </div>
+
+    @if (Role == "admin")
+    {
+        <div class="form-group row">
+            <label for="tenant_select" class="col-md-2 col-form-label">Tenant:</label>
+            <div class="col-md-10">
+                <InputSelect id="tenant_select" @bind-Value="TenantId">
+                    @foreach (var tenant in Tenants)
+                    {
+                        <option value="@tenant.Id">@tenant.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+    }
+
     <div class="row">
         <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Register</button>
+            <button type="submit" class="btn btn-success">Save</button>
         </div>
     </div>
 </EditForm>
@@ -53,37 +90,68 @@
 <p>@Message</p>
 
 @code {
-    [Parameter]
-    public AccountModal user { get; set; }
-    [Parameter]
-    public bool isAdmin { get; set; }
-    [Parameter]
+
+    public User user { get; set; }
+
+    public Guid TenantId { get; set; }
+
     public string Message { get; set; }
+
+    public string Role { get; set; }
+
+    public List<Tenant> Tenants { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        isAdmin = false;
-        user = new AccountModal();
+        user = new User();
         Message = string.Empty;
+        string token = await localStorageService.GetItem<string>("token");
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(await localStorageService.GetItem<string>("token"));
+        Role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
+        if(Role == "admin")
+        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
+            Tenants = await result.Content.ReadFromJsonAsync<List<Tenant>>();
+        }
+        else
+        {
+            user.TenantId = new Guid(jwtSecurityToken.Id);
+            //t
+        }
+
+        //TenantId = Tenants[0].Id;
+
     }
 
     public async void Save()
     {
         try
         {
-            Console.WriteLine(user.Name);
-            user.UserType = isAdmin ? "Admin" : "Tenant";
+            user.UserType = "user";
+            user.CreatedOn = DateTime.Now;
+            user.ModifiedOn = DateTime.Now;
+            user.IsDeleted = false;
+            if(Role == "admin")
+            {
+                user.TenantId = TenantId;
+            }
+            else
+            {
+              
+            }
+
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var result = await httpClient.PostAsJsonAsync("api/Account/Register", user);
+            var result = await httpClient.PostAsJsonAsync("api/Account/AddUser", user);
             ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
-            if (responseModal?.StatusCode == 200)
+            if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
             {
                 user.Email = string.Empty;
                 user.Name = string.Empty;
                 user.UserType = string.Empty;
                 user.Password = string.Empty;
-                isAdmin = false;
                 Message = responseModal.Message;
             }
         }

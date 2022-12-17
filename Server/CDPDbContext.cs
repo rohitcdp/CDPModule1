@@ -9,5 +9,6 @@ namespace CDPModule1.Server
         {  }
 
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

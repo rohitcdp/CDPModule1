@@ -2,6 +2,7 @@
 using CDPModule1.Server.IRepository;
 using CDPModule1.Server.Utils;
 using CDPModule1.Shared;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -18,25 +19,21 @@ namespace CDPModule1.Server.Repository
             dbContext = cdpContext;
         }
 
-        public string Register(Tenant user)
+        public async Task<User> CreateUser(User user)
         {
-            Tenant oldUser = dbContext.Tenants.Where(u=>u.Email == user.Email).FirstOrDefault();
-            if(oldUser == null)
-            {
-                dbContext.Tenants.Add(user);
-                dbContext.SaveChanges();
-                return StatusConstant.SUCCESS;
-            }
-            else
-            {
-                return StatusConstant.USER_EXISTS;
-            }
-            
+            await dbContext.Users.AddAsync(user);
+            await dbContext.SaveChangesAsync();
+            return user;
         }
-
-        public Tenant? GetUserByMail(string email)
+        public async Task<Tenant> CreateTenant(Tenant tenant)
+        {            
+            await dbContext.Tenants.AddAsync(tenant);
+            await dbContext.SaveChangesAsync();
+            return tenant;           
+        }
+        public async Task<User?> GetUserByMail(string email)
         {
-            return dbContext.Tenants.Where(u => u.Email == email).FirstOrDefault();
+            return await dbContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
     }
 }

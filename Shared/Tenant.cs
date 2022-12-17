@@ -1,10 +1,16 @@
 ﻿namespace CDPModule1.Shared
 {
+
+
     public class Tenant : BaseEntity
     {
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }    
-        public string UserType { get; set; }
+        public string Contact { get; set; }
+        public string? Country { get; set; }
+        public string? Address { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

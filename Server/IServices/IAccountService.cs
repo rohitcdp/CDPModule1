@@ -1,12 +1,15 @@
 ﻿using CDPModule1.Shared;
+using CDPModule1.Shared.RequestModel;
 
 namespace CDPModule1.Server.IServices
 {
     public interface IAccountService
     {
-        string Register(Tenant user);
+        Task<ResponseModal> CreateUser(User user);
 
-        string Login(Tenant user);
+        Task<ResponseModal> CreateTenant(Tenant tenant);
+
+        Task<string> Login(AccountModal user);
 
     }
 }
