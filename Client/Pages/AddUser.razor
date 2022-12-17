@@ -118,11 +118,7 @@
         else
         {
             user.TenantId = new Guid(jwtSecurityToken.Id);
-            //t
         }
-
-        //TenantId = Tenants[0].Id;
-
     }
 
     public async void Save()
@@ -137,11 +133,6 @@
             {
                 user.TenantId = TenantId;
             }
-            else
-            {
-              
-            }
-
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.PostAsJsonAsync("api/Account/AddUser", user);
