@@ -1,0 +1,20 @@
+﻿@page "/dashboard"
+@inject IJSRuntime js
+
+
+
+<h3>Dashboard</h3>
+
+<button onclick="getChart('PieChart')">Pie</button>
+<button onclick="getChart('BarChart')">Bar</button>
+
+<div id="chartDiv"></div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var module = await js.InvokeAsync<IJSObjectReference>("import", "./Pages/Dashboard.razor.js");
+    }
+
+}
