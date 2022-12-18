@@ -20,6 +20,7 @@ namespace CDPModule1.Server.Controllers
         [HttpPost]
         [Route("AddUser")]
         [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.User)]
         public ResponseModal CreateUser([FromBody] User user)
         {
 
@@ -53,9 +54,9 @@ namespace CDPModule1.Server.Controllers
         [HttpPost]
         [Route("SendPasswordlink")]
         [AllowAnonymous]
-        public async void ForgotPassword([FromBody] ForgotPassword forgotPassword)
+        public async Task<ResponseModal> ForgotPassword([FromBody] ForgotPassword forgotPassword)
         {
-            await _accountService.SendForgotPasswordMail(forgotPassword.Email);
+          return  await _accountService.SendForgotPasswordMail(forgotPassword.Email);
         }
 
         [HttpPost]
@@ -68,28 +69,28 @@ namespace CDPModule1.Server.Controllers
 
         [HttpPost]
         [Route("SendEmailverifiedlink")]
-        [AllowAnonymous]
-        public async void SendEmailverifiedlink([FromBody] ForgotPassword forgotPassword)
-        {
-            await _accountService.SendForgotPasswordMail(forgotPassword.Email);
-        }
+        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.User)]
+        public async Task<ResponseModal> SendEmailverifiedlink([FromQuery] string email) =>  await _accountService.SendForgotPasswordMail(email);
+
 
         [HttpPost]
         [Route("ChangeEmailVerfiedStatus")]
-        [AllowAnonymous]
-        public async Task<ResponseModal> ChangeEmailVerfiedStatus([FromQuery] string email)
-        {
-            return await _accountService.ChangeEmailVerifiedStatus(email);
-        }
+        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.User)]
+        public async Task<ResponseModal> ChangeEmailVerfiedStatus([FromQuery] string email) => await _accountService.ChangeEmailVerifiedStatus(email);
+
 
         [HttpGet]
         [Route("GetAllUsers")]
         [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.User)]
         public ResponseModal GetAllUsers() => _accountService.GetAllUsers().Result;
-        
+
         [HttpGet]
         [Route("GetTenantUsers")]
         [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.User)]
         public ResponseModal GetTenantUsers(Guid tenantId) => _accountService.GetTenantUsers(tenantId).Result;
 
     }

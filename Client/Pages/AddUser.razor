@@ -58,12 +58,25 @@
     </div>
 
     <div class="form-group row">
+        <label for="dob" class="col-md-2 col-form-label">Gender</label>
+        <div class="col-md-10">
+            <InputRadioGroup @bind-Value="user.Gender">
+                <InputRadio Value="@("Female")" /> @("Female") 
+                <InputRadio Value="@("Male")" /> @("Male")
+            </InputRadioGroup>
+        </div>
+    </div>
+
+  @*  <div class="form-group row">
         <label for="gender" class="col-md-2 col-form-label">Gender:</label>
         <div class="col-md-10">
             <InputText id="gender" class="form-control" @bind-Value="user.Gender" />
             <ValidationMessage For="@(() => user.Gender)" />
         </div>
-    </div>
+    </div>*@
+
+   
+    
 
     @if (Role == "admin")
     {
@@ -90,7 +103,7 @@
 <p>@Message</p>
 
 @code {
-
+    [Parameter]
     public User user { get; set; }
 
     public Guid TenantId { get; set; }
@@ -99,13 +112,15 @@
 
     public string Role { get; set; }
 
+    public string token { get; set; }
+
     public List<Tenant> Tenants { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         user = new User();
         Message = string.Empty;
-        string token = await localStorageService.GetItem<string>("token");
+        token = await localStorageService.GetItem<string>("token");
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(await localStorageService.GetItem<string>("token"));
         Role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
@@ -114,15 +129,13 @@
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
             Tenants = await result.Content.ReadFromJsonAsync<List<Tenant>>();
-
-
-
         }
         else
         {
-
+            var claimObject = jwtSecurityToken.Claims.Where(x => x.Type == "TenantId").FirstOrDefault();
+            string? value = claimObject.Value;
+            user.TenantId = new Guid(value);
         }
-
     }
 
     public async void Save()
@@ -137,15 +150,7 @@
             {
                 user.TenantId = TenantId;
             }
-            else
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jwtSecurityToken = handler.ReadJwtToken(await localStorageService.GetItem<string>("token"));
-                var claimObject = jwtSecurityToken.Claims.Where(x => x.Type == "Id").FirstOrDefault();
-                var value = claimObject.Value;
-                user.TenantId = Guid.Parse(value);
-            }
-            string token = await localStorageService.GetItem<string>("token");
+            httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.PostAsJsonAsync("api/Account/AddUser", user);
             ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();

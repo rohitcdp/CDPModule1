@@ -136,6 +136,7 @@ namespace CDPModule1.Server.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                 new Claim("Id", user.Id.ToString()),
+                new Claim("TenantId", user.TenantId.ToString()),
                 new Claim(ClaimTypes.Role, user.UserType),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)                
