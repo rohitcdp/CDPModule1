@@ -4,6 +4,7 @@ using CDPModule1.Server.IRepository;
 using CDPModule1.Server.IServices;
 using CDPModule1.Server.Repository;
 using CDPModule1.Server.Services;
+using CDPModule1.Server.Utils;
 using CDPModule1.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ITenantService, TenantService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<MailSender>();
+
 
 builder.Services.AddCors(options =>
 {

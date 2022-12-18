@@ -49,6 +49,35 @@ namespace CDPModule1.Server.Controllers
             }
         }
 
-        public void ForgotPassword([FromBody] str)
+        [HttpPost]
+        [Route("SendPasswordlink")]
+        [AllowAnonymous]
+        public async void ForgotPassword([FromBody] ForgotPassword forgotPassword) {
+            await _accountService.SendForgotPasswordMail(forgotPassword.Email);
+        }
+
+        [HttpPost]
+        [Route("ChangePassword")]
+        [AllowAnonymous]
+        public async Task<ResponseModal> ChangePassword([FromBody] ForgotPassword forgotPassword)
+        {
+            return await _accountService.ChangePassword(forgotPassword.Email, forgotPassword.Password);
+        }
+
+        [HttpPost]
+        [Route("SendEmailverifiedlink")]
+        [AllowAnonymous]
+        public async void SendEmailverifiedlink([FromBody] ForgotPassword forgotPassword)
+        {
+            await _accountService.SendForgotPasswordMail(forgotPassword.Email);
+        }
+
+        [HttpPost]
+        [Route("ChangeEmailVerfiedStatus")]
+        [AllowAnonymous]
+        public async Task<ResponseModal> ChangeEmailVerfiedStatus([FromQuery] string email)
+        {
+            return await _accountService.ChangeEmailVerifiedStatus(email);
+        }
     }
 }

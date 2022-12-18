@@ -11,5 +11,12 @@ namespace CDPModule1.Server.IServices
 
         Task<string> Login(AccountModal user);
 
+        Task<ResponseModal> SendForgotPasswordMail(string email);
+
+        Task<ResponseModal> SendEmailVerificationMail(string email);
+
+        Task<ResponseModal> ChangePassword(string email,string password);
+
+        Task<ResponseModal> ChangeEmailVerifiedStatus(string email);
     }
 }

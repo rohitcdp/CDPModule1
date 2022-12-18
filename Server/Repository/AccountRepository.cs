@@ -25,6 +25,14 @@ namespace CDPModule1.Server.Repository
             await dbContext.SaveChangesAsync();
             return user;
         }
+
+        public async Task<User> UpdateUser(User user)
+        {
+            await Task.FromResult(dbContext.Users.Update(user));
+            await dbContext.SaveChangesAsync();
+            return user;
+        }
+
         public async Task<Tenant> CreateTenant(Tenant tenant)
         {            
             await dbContext.Tenants.AddAsync(tenant);

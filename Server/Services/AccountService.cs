@@ -16,11 +16,14 @@ namespace CDPModule1.Server.Services
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IConfiguration _configuration;
+        private readonly MailSender _mailSender;
 
-        public AccountService(IConfiguration configuration, IAccountRepository accountRepository)
+
+        public AccountService(IConfiguration configuration, IAccountRepository accountRepository, MailSender mailSender)
         {
             _configuration = configuration;
             _accountRepository = accountRepository;
+            _mailSender = mailSender;
         }
 
         public async Task<ResponseModal> CreateUser(User user)
@@ -74,6 +77,50 @@ namespace CDPModule1.Server.Services
             return StatusConstant.USER_NOT_EXISTS;
         }
 
+
+        public async Task<ResponseModal> SendForgotPasswordMail(string email)
+        {
+           string result = await _mailSender.SendForgotPasswordLink(email);
+            return new ResponseModal { Data = null, Message = result, StatusCode = 200 };
+        }
+
+        public async Task<ResponseModal> SendEmailVerificationMail(string email)
+        {
+            string result = await _mailSender.SendEmailVerificationLink(email);
+            return new ResponseModal { Data = null, Message = result, StatusCode = 200 };
+        }
+
+        public async Task<ResponseModal> ChangePassword(string email, string password)
+        {
+            User user = await _accountRepository.GetUserByMail(email); 
+            if (user != null)
+            {
+                user.Password = password;
+                user.ModifiedOn = DateTime.Now;
+                await _accountRepository.UpdateUser(user);
+                return new ResponseModal { Data = user, Message = StatusConstant.SUCCESS, StatusCode = 200 };
+            }
+            else
+            {
+                return new ResponseModal { Data = user, Message= StatusConstant.USER_NOT_EXISTS, StatusCode= 200 };
+            }
+        }
+
+        public async Task<ResponseModal> ChangeEmailVerifiedStatus(string email)
+        {
+            User user = await _accountRepository.GetUserByMail(email);
+            if (user != null)
+            {
+                user.IsEmailVerified = true;
+                user.ModifiedOn = DateTime.Now;
+                await _accountRepository.UpdateUser(user);
+                return new ResponseModal { Data = user, Message = StatusConstant.SUCCESS, StatusCode = 200 };
+            }
+            else
+            {
+                return new ResponseModal { Data = user, Message = StatusConstant.USER_NOT_EXISTS, StatusCode = 200 };
+            }
+        }
         private string GenerateToken(User? user)
         {
             if (user==null)

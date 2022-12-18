@@ -5,6 +5,7 @@ namespace CDPModule1.Server.IRepository
     public interface IAccountRepository
     {
        Task<User> CreateUser(User user);
+       Task<User> UpdateUser(User user);
 
        Task<Tenant> CreateTenant(Tenant tenant);
 
