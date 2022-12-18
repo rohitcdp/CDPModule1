@@ -109,13 +109,20 @@
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(await localStorageService.GetItem<string>("token"));
         Role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
-        if(Role == "admin")
+        if (Role == "admin")
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
             Tenants = await result.Content.ReadFromJsonAsync<List<Tenant>>();
+
+
+
         }
-       
+        else
+        {
+
+        }
+
     }
 
     public async void Save()
@@ -126,7 +133,7 @@
             user.CreatedOn = DateTime.Now;
             user.ModifiedOn = DateTime.Now;
             user.IsDeleted = false;
-            if(Role == "admin")
+            if (Role == "admin")
             {
                 user.TenantId = TenantId;
             }

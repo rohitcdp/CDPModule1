@@ -8,11 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace CDPModule1.Server.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]   
+    [ApiController]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService) { 
+        public AccountController(IAccountService accountService)
+        {
             _accountService = accountService;
         }
 
@@ -20,17 +21,17 @@ namespace CDPModule1.Server.Controllers
         [Route("AddUser")]
         [Authorize(Roles = Roles.Admin)]
         public ResponseModal CreateUser([FromBody] User user)
-        { 
+        {
 
-            return _accountService.CreateUser(user).Result;           
+            return _accountService.CreateUser(user).Result;
         }
 
         [HttpPost]
         [Route("AddTenant")]
         [Authorize(Roles = Roles.Admin)]
         public ResponseModal CreateTenant([FromBody] Tenant tenant)
-        {         
-           return _accountService.CreateTenant(tenant).Result;            
+        {
+            return _accountService.CreateTenant(tenant).Result;
         }
 
         [HttpPost]
@@ -52,7 +53,8 @@ namespace CDPModule1.Server.Controllers
         [HttpPost]
         [Route("SendPasswordlink")]
         [AllowAnonymous]
-        public async void ForgotPassword([FromBody] ForgotPassword forgotPassword) {
+        public async void ForgotPassword([FromBody] ForgotPassword forgotPassword)
+        {
             await _accountService.SendForgotPasswordMail(forgotPassword.Email);
         }
 
@@ -79,5 +81,16 @@ namespace CDPModule1.Server.Controllers
         {
             return await _accountService.ChangeEmailVerifiedStatus(email);
         }
+
+        [HttpGet]
+        [Route("GetAllUsers")]
+        [Authorize(Roles = Roles.Admin)]
+        public ResponseModal GetAllUsers() => _accountService.GetAllUsers().Result;
+        
+        [HttpGet]
+        [Route("GetTenantUsers")]
+        [Authorize(Roles = Roles.Admin)]
+        public ResponseModal GetTenantUsers(Guid tenantId) => _accountService.GetTenantUsers(tenantId).Result;
+
     }
 }

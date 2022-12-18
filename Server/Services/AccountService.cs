@@ -152,6 +152,19 @@ namespace CDPModule1.Server.Services
             var stringToken = tokenHandler.WriteToken(token);
             return stringToken;
         }
+
+        public async Task<ResponseModal> GetAllUsers()
+        {
+            var users=await _accountRepository.GetAllUsers();
+
+            return new ResponseModal { Data= users,Message=StatusConstant.SUCCESS,StatusCode=200 };
+        }
+        public async Task<ResponseModal> GetTenantUsers(Guid tenantId)
+        {
+            var users=await _accountRepository.GetTenantUsers(tenantId);
+
+            return new ResponseModal { Data= users,Message=StatusConstant.SUCCESS,StatusCode=200 };
+        }
     }
   
 }

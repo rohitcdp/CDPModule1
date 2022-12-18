@@ -34,14 +34,18 @@ namespace CDPModule1.Server.Repository
         }
 
         public async Task<Tenant> CreateTenant(Tenant tenant)
-        {            
+        {
             await dbContext.Tenants.AddAsync(tenant);
             await dbContext.SaveChangesAsync();
-            return tenant;           
+            return tenant;
         }
         public async Task<User?> GetUserByMail(string email)
         {
             return await dbContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
+
+        public async Task<List<User>> GetAllUsers()=> await dbContext.Users.ToListAsync();
+        public async Task<List<User>> GetTenantUsers(Guid tenantId) => await dbContext.Users.Where(x=>x.TenantId==tenantId).ToListAsync();
+        
     }
 }

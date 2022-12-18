@@ -11,5 +11,8 @@ namespace CDPModule1.Server.IRepository
 
         Task<User?> GetUserByMail(string email);
 
+        Task<List<User>> GetAllUsers();
+        Task<List<User>> GetTenantUsers(Guid tenantId);
+
     }
 }

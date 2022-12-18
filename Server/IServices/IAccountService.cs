@@ -18,5 +18,10 @@ namespace CDPModule1.Server.IServices
         Task<ResponseModal> ChangePassword(string email,string password);
 
         Task<ResponseModal> ChangeEmailVerifiedStatus(string email);
+
+        Task<ResponseModal> GetAllUsers();
+
+        Task<ResponseModal> GetTenantUsers(Guid tenantId);
+
     }
 }
