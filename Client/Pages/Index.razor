@@ -2,15 +2,31 @@
 
 <div>
     <h1>Upload File </h1>
-    <InputFile onclick="@uploadFile" />
+    <InputFile  OnChange="@uploadFile" />
 </div>
 
-@code{
-    public void uploadFile(InputFileChangeEventArgs  inputFileChangeEvent)
+@code {
+    public void uploadFile(InputFileChangeEventArgs inputFileChangeEvent)
     {
-        var file = inputFileChangeEvent.File;
-        byte[] buffer = new byte[file.Size];
-        file.OpenReadStream().Read(buffer);
-        string base64 = Convert.ToBase64String(buffer);
+        //var file = inputFileChangeEvent.File;
+        //byte[] buffer = new byte[file.Size];
+        //file.OpenReadStream().Read(buffer);
+        //string base64 = Convert.ToBase64String(buffer);
+
+
+
+        try
+        {
+            using (var stream = File.OpenRead("C://Rohit Pawar/pdf samples/sample1.pdf"))
+            using (UglyToad.PdfPig.PdfDocument document = UglyToad.PdfPig.PdfDocument.Open(stream))
+            {
+                var page = document.GetPage(2);
+                string data = string.Join(" ", page.GetWords());
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }
