@@ -13,7 +13,7 @@
 
 
 <EditForm Model="@tenant" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />   
+    <DataAnnotationsValidator />
     <div class="form-group row">
         <label for="confirm" class="col-md-2 col-form-label">Name:</label>
         <div class="col-md-10">
@@ -66,6 +66,9 @@
 @code {
     [Parameter]
     public Tenant tenant { get; set; }
+
+    public List<Tenant> allTenants { get; set; }
+
     [Parameter]
     public string Message { get; set; }
 
@@ -73,6 +76,15 @@
     {
         tenant = new Tenant();
         Message = string.Empty;
+        GetTenants();
+    }
+
+    public async void GetTenants()
+    {
+        string token = await localStorageService.GetItem<string>("token");
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/Account/GetAllTenants");
+
     }
 
     public async void Save()
