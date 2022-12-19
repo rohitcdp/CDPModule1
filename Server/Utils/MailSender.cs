@@ -1,4 +1,5 @@
 ﻿using System.Net.Mail;
+using System.Text;
 
 namespace CDPModule1.Server.Utils
 {
@@ -12,7 +13,7 @@ namespace CDPModule1.Server.Utils
 
         public async Task<string> SendForgotPasswordLink(string email)
         {
-            string fromMail =  _configuration.GetSection("MailSender:FromMail").Value;
+            /*string fromMail =  _configuration.GetSection("MailSender:FromMail").Value;
             string password = _configuration["MailSender:Password"];
             string toMail = email;
             string link = "<p>https://localhost:7031/forgotPassword/" + email + "_" + DateTime.Now+"</p>";
@@ -37,6 +38,33 @@ namespace CDPModule1.Server.Utils
                 return StatusConstant.SUCCESS;
             }catch(Exception ex)
             {
+                return StatusConstant.FAILED;
+            }*/
+            string fromMail = _configuration.GetSection("MailSender:FromMail").Value;
+            string password = _configuration["MailSender:Password"];
+            string toMail = email;
+            string link = "<p>https://localhost:7031/forgotPassword/" + email + "_" + DateTime.Now + "</p>";
+           MailMessage message = new MailMessage(fromMail, toMail);
+
+            string mailbody = link;
+            message.Subject = "Forgot Password Link ";
+            message.Body = mailbody;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = true;
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
+            System.Net.NetworkCredential basicCredential1 = new
+            System.Net.NetworkCredential(fromMail, password);
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = basicCredential1;
+            try
+            {
+                client.Send(message);
+                return StatusConstant.SUCCESS;
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
                 return StatusConstant.FAILED;
             }
         }

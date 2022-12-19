@@ -104,7 +104,7 @@
 
 @code {
     [Parameter]
-    public User user { get; set; }
+    public UserModal user { get; set; }
 
     public Guid TenantId { get; set; }
 
@@ -118,7 +118,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        user = new User();
+        user = new UserModal();
         Message = string.Empty;
         token = await localStorageService.GetItem<string>("token");
         var handler = new JwtSecurityTokenHandler();
@@ -143,8 +143,6 @@
         try
         {
             user.UserType = "user";
-            user.CreatedOn = DateTime.Now;
-            user.ModifiedOn = DateTime.Now;
             user.IsDeleted = false;
             if (Role == "admin")
             {

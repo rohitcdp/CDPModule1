@@ -1,5 +1,6 @@
 ﻿@using CDPModule1.Client.Services;
 @inject ILocalStorageService localStorageService;
+@inject NavigationManager NavigationManager;
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
@@ -21,7 +22,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        token = await localStorageService.GetItem<string>("token");
-        LayoutType = string.IsNullOrEmpty(token) ? typeof(Login) : typeof(MainLayout);
+        if (NavigationManager.Uri.Contains("forgotPassword"))
+        {
+            LayoutType = typeof(ForgotPassword);
+        }
+        else if (NavigationManager.Uri.Contains("emailVerify"))
+        {
+            LayoutType = typeof(EmailVerify);
+        }
+        else
+        {
+            token = await localStorageService.GetItem<string>("token");
+            LayoutType = string.IsNullOrEmpty(token) ? typeof(Login) : typeof(MainLayout);
+        }        
     }
 } 
