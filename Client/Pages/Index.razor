@@ -1,28 +1,131 @@
 ﻿@page "/"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@using System.Text;
+@using CDPModule1.Client.Services;
+@using CDPModule1.Shared;
+@using GrapeCity.Documents.Pdf;
+@using GrapeCity.Documents.Pdf.TextMap;
+@using System.Net.Http.Headers;
+@using iText.Kernel.Pdf;
+@using iText.Kernel.Pdf.Canvas.Parser.Listener;
+@using iText.Kernel.Pdf.Canvas.Parser;
+using iTextSharp
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+
 
 <div>
     <h1>Upload File </h1>
-    <InputFile  OnChange="@uploadFile" />
+    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" multiple />
 </div>
 
+
 @code {
-    public void uploadFile(InputFileChangeEventArgs inputFileChangeEvent)
+
+    private List<UploadResult> uploadResults = new();
+
+
+    public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {
-        //var file = inputFileChangeEvent.File;
-        //byte[] buffer = new byte[file.Size];
-        //file.OpenReadStream().Read(buffer);
-        //string base64 = Convert.ToBase64String(buffer);
+        using var dataContent = new MultipartFormDataContent();
+
+        foreach (var file in inputFileChangeEvent.GetMultipleFiles())
+        {
+            var fileContent = new StreamContent(file.OpenReadStream());
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
 
+            dataContent.Add(
+                content: fileContent,
+                name: "\"files\"",
+                fileName: file.Name);
+        }
 
+        var res = await Http.PostAsync("api/File", dataContent);
+
+        var newUploadResults = await res.Content.ReadFromJsonAsync<List<UploadResult>>();
+
+        if (newUploadResults is not null)
+        {
+            uploadResults = uploadResults.Concat(newUploadResults).ToList();
+        }
+    }
+
+    public async void uploadPdf(InputFileChangeEventArgs inputFileChangeEvent)
+    {
         try
         {
-            using (var stream = File.OpenRead("C://Rohit Pawar/pdf samples/sample1.pdf"))
-            using (UglyToad.PdfPig.PdfDocument document = UglyToad.PdfPig.PdfDocument.Open(stream))
-            {
-                var page = document.GetPage(2);
-                string data = string.Join(" ", page.GetWords());
-            }
+            //string token = await localStorageService.GetItem<string>("token");
+            //httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            //httpClient.DefaultRequestHeaders.Add("Content-Type", "multipart/form-data");
+            //var result = await httpClient.PostAsJsonAsync("api/File/upload", inputFileChangeEvent);
+            //ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            //if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
+            //{
+
+            //}
+
+
+
+            //StringBuilder text = new StringBuilder();
+            //string path = Path.Combine(@"C:\Users\Administrator\Documents\CDP\", inputFileChangeEvent.File.Name);
+
+            //PdfReader pdfReader = new PdfReader(path);
+            //PdfDocument pdfDocument = new PdfDocument(pdfReader);
+            //for (int index = 1; index <= pdfDocument.GetNumberOfPages(); index++)
+            //{
+            //    ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
+            //    var page = pdfDocument.GetPage(index);
+            //    string currentText = PdfTextExtractor.GetTextFromPage(page, strategy);
+            //    currentText = Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.UTF8.GetBytes(currentText)));
+            //    text.Append(currentText);
+            //}
+            //pdfReader.Close();
+            //File.WriteAllText("C:\\UserLogger Session.pdf.xls", text.ToString());
+
+
+
+            var file = inputFileChangeEvent.File;
+            byte[] buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            string base64 = Convert.ToBase64String(buffer);
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    public async void uploadFile(InputFileChangeEventArgs inputFileChangeEvent)
+    {
+        try
+        {
+            var file = inputFileChangeEvent.File;
+            byte[] buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            string base64 = Convert.ToBase64String(buffer);
+            var doc = new GcPdfDocument();
+            doc.Load(new MemoryStream(Convert.FromBase64String(base64)));
+            //To extract Page 1
+            var tmap_page2 = doc.Pages[0].GetTextMap();
+            tmap_page2.GetFragment(out TextMapFragment newFragment, out string Extractedtext);
+
+            Console.WriteLine("Extracted Text: \n\n" + Extractedtext);
+            //var file = inputFileChangeEvent.File;
+            //byte[] buffer = new byte[file.Size];
+            //file.OpenReadStream().ReadAsync(buffer);
+            //string base64 = Convert.ToBase64String(buffer);
+            //string path = "pdfs\\sample1.pdf";
+            //FileStream fs = new(path, FileMode.Create);
+            //await file.OpenReadStream().CopyToAsync(fs);
+            //using (var stream = File.OpenRead(path))
+            //using (UglyToad.PdfPig.PdfDocument document = UglyToad.PdfPig.PdfDocument.Open(stream))
+            //{
+            //    var page = document.GetPage(1);
+            //    string data = string.Join(" ", page.GetWords());
+            //}
+
         }
         catch (Exception ex)
         {

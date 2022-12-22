@@ -54,6 +54,22 @@
         </div>
     </div>
 
+    <div class="form-group row">
+        <label for="confirm" class="col-md-2 col-form-label">GST Number:</label>
+        <div class="col-md-10">
+            <InputText id="gstNumber" class="form-control" @bind-Value="tenant.GstNumber" />
+            <ValidationMessage For="@(() => tenant.GstNumber)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="confirm" class="col-md-2 col-form-label">PAN Number:</label>
+        <div class="col-md-10">
+            <InputText id="panNumber" class="form-control" @bind-Value="tenant.PanNumber" />
+            <ValidationMessage For="@(() => tenant.PanNumber)" />
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12 text-right">
             <button type="submit" class="btn btn-success">Save</button>
@@ -94,6 +110,7 @@
             tenant.CreatedOn = DateTime.Now;
             tenant.ModifiedOn = DateTime.Now;
             tenant.IsDeleted = false;
+            httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.PostAsJsonAsync("api/Account/AddTenant", tenant);
