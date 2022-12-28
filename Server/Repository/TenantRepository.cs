@@ -17,5 +17,10 @@ namespace CDPModule1.Server.Repository
         {
             return await dbContext.Tenants.ToListAsync();
         }
+
+        public async Task<Tenant> GetById(Guid Id)
+        {
+            return await dbContext.Tenants.Where(x=>x.Id == Id).FirstOrDefaultAsync();
+        }
     }
 }

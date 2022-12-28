@@ -1,0 +1,57 @@
+﻿@page "/tenants"
+
+@using CDPModule1.Client.Services;
+@using CDPModule1.Shared;
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+@inject NavigationManager NavManager
+
+
+<h3>Tenants</h3>
+
+<button onclick="@CreateNew" class="btn btn-success">Create New Tenant</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>GST Number</th>
+            <th>PAN Number</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in @TenantList)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Contact</td>
+                <td>@user.Address</td>
+                <td>@user.Country</td>
+                <td>@user.GstNumber</td>
+                <td>@user.PanNumber</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<Tenant> TenantList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await localStorageService.GetItem<string>("token");
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
+        TenantList = await result.Content.ReadFromJsonAsync<List<Tenant>>();
+    }
+
+    public void CreateNew() => NavManager.NavigateTo("/add_tenant", true);
+}
+

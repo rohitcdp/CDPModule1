@@ -83,7 +83,12 @@
     [Parameter]
     public Tenant tenant { get; set; }
 
+    [Parameter]
+  //  public string Id { get; set; }
+
     public List<Tenant> allTenants { get; set; }
+
+    public string token { get; set; }
 
     [Parameter]
     public string Message { get; set; }
@@ -93,11 +98,17 @@
         tenant = new Tenant();
         Message = string.Empty;
         GetTenants();
+        //Console.WriteLine(Id);
+      //  httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+       // tenant = await httpClient.GetFromJsonAsync<Tenant>("api/Tenant/GetById?Id=" + Id);
+        //tenant = await result.Content.ReadFromJsonAsync<Tenant>();
+
     }
 
     public async void GetTenants()
     {
-        string token = await localStorageService.GetItem<string>("token");
+        token = await localStorageService.GetItem<string>("token");
+        httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/Account/GetAllTenants");
 
@@ -112,6 +123,7 @@
             tenant.IsDeleted = false;
             httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>("token");
+            httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.PostAsJsonAsync("api/Account/AddTenant", tenant);
             ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();

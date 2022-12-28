@@ -19,7 +19,7 @@ namespace CDPModule1.Server.IServices
 
         Task<ResponseModal> ChangeEmailVerifiedStatus(string email);
 
-        Task<ResponseModal> GetAllUsers();
+        Task<List<User>> GetAllUsers();
 
         Task<ResponseModal> GetTenantUsers(Guid tenantId);
 

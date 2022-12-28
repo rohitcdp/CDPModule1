@@ -154,11 +154,12 @@ namespace CDPModule1.Server.Services
             return stringToken;
         }
 
-        public async Task<ResponseModal> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
             var users=await _accountRepository.GetAllUsers();
+            return users;
 
-            return new ResponseModal { Data= users,Message=StatusConstant.SUCCESS,StatusCode=200 };
+         //   return new ResponseModal { Data= null,DataList = users,Message=StatusConstant.SUCCESS,StatusCode=200 };
         }
         public async Task<ResponseModal> GetTenantUsers(Guid tenantId)
         {

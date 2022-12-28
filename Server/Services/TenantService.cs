@@ -23,5 +23,10 @@ namespace CDPModule1.Server.Services
             return new List<Tenant>();
 
         }
+
+        public Task<Tenant> GetById(Guid Id)
+        {
+            return _tenantRepository.GetById(Id);
+        }
     }
 }

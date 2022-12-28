@@ -1,0 +1,49 @@
+﻿@page "/users"
+
+@using CDPModule1.Client.Services;
+@using CDPModule1.Shared;
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+@inject NavigationManager NavManager
+
+<h3>Users</h3>
+<button onclick="@CreateNew" class="btn btn-success">Create New User</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>UserType</th>
+            <th>Gender</th>
+            <th>Tenant</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in @UserList)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.UserType</td>
+                <td>@user.Gender</td>
+                <td>@user.Tenant.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<User> UserList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await localStorageService.GetItem<string>("token");
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/Account/GetAllUsers");
+        UserList = await result.Content.ReadFromJsonAsync<List<User>>();
+    }
+
+    public void CreateNew() => NavManager.NavigateTo("/add_user", true);
+}

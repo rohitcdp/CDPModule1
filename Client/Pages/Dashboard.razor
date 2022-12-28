@@ -5,16 +5,23 @@
 
 <h3>Dashboard</h3>
 
-<button onclick="getChart('PieChart')">Pie</button>
-<button onclick="getChart('BarChart')">Bar</button>
+<button @onclick="@(()=> Click("PieChart"))">Pie</button>
+<button @onclick="@(()=> Click("BarChart"))">Bar</button>
 
 <div id="chartDiv"></div>
 
 @code {
 
+
+    private async Task Click(string type)
+    {
+       // var module = await js.InvokeAsync<IJSObjectReference>("import", "./Pages/Dashboard.razor.js");
+        await js.InvokeVoidAsync("getChart", type);
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        var module = await js.InvokeAsync<IJSObjectReference>("import", "./Pages/Dashboard.razor.js");
+        await js.InvokeVoidAsync("getChart", "PieChart");
     }
 
 }

@@ -97,7 +97,7 @@ namespace CDPModule1.Server.Controllers
         [HttpGet]
         [Route("GetAllUsers")]
         [Authorize]
-        public ResponseModal GetAllUsers() => _accountService.GetAllUsers().Result;
+        public List<User> GetAllUsers() => _accountService.GetAllUsers().Result;
 
         [HttpGet]
         [Route("GetTenantUsers")]

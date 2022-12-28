@@ -126,6 +126,7 @@
         Role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
         if (Role == "admin")
         {
+            httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
             Tenants = await result.Content.ReadFromJsonAsync<List<Tenant>>();

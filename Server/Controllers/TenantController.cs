@@ -24,5 +24,13 @@ namespace CDPModule1.Server.Controllers
         {
             return  _tenantService.GetAllTenants().Result;
         }
+
+        [HttpGet]
+        [Route("GetTenantById")]
+        [Authorize(Roles = Roles.Admin)]
+        public Tenant GetTenantById([FromQuery] Guid Id)
+        {
+            return _tenantService.GetById(Id).Result;
+        }
     }
 }

@@ -10,45 +10,64 @@
 @using iText.Kernel.Pdf;
 @using iText.Kernel.Pdf.Canvas.Parser.Listener;
 @using iText.Kernel.Pdf.Canvas.Parser;
-using iTextSharp
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
 
-<div>
+<div >
     <h1>Upload File </h1>
-    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" multiple />
+    <InputFile OnChange="@uploadPdfNew" id="FileUpload1"/>
 </div>
-
+<label>Html upload data ..</label>
+@htmlCode
 
 @code {
 
     private List<UploadResult> uploadResults = new();
-
+    [Parameter]
+    public string htmlCode { get; set; } = string.Empty;
 
     public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {
-        using var dataContent = new MultipartFormDataContent();
-
-        foreach (var file in inputFileChangeEvent.GetMultipleFiles())
+        try
         {
+            using var dataContent = new MultipartFormDataContent();
+
+            //  foreach (var file in inputFileChangeEvent.GetMultipleFiles())
+            // {
+            var file = inputFileChangeEvent.File;
             var fileContent = new StreamContent(file.OpenReadStream());
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
 
             dataContent.Add(
                 content: fileContent,
                 name: "\"files\"",
                 fileName: file.Name);
-        }
+            //}
 
-        var res = await Http.PostAsync("api/File", dataContent);
+            httpClient.DefaultRequestHeaders.Clear();
+            string token = await localStorageService.GetItem<string>("token");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            httpClient.DefaultRequestHeaders.Add("ContentType", "multipart/form-data");
 
-        var newUploadResults = await res.Content.ReadFromJsonAsync<List<UploadResult>>();
+            var res = await httpClient.PostAsync("api/File/uploadPdf", dataContent);
+            string responseModal =  res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            if (!string.IsNullOrEmpty(responseModal))
+            {
+                htmlCode = responseModal;
+            }
 
-        if (newUploadResults is not null)
+            //   var newUploadResults = await res.Content.ReadFromJsonAsync<List<UploadResult>>();
+
+            //if (newUploadResults is not null)
+            //{
+            //    uploadResults = uploadResults.Concat(newUploadResults).ToList();
+
+            //}
+        }catch(Exception ex)
         {
-            uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            Console.WriteLine("error");
+            htmlCode = "Error in api";
         }
     }
 
@@ -96,6 +115,8 @@ using iTextSharp
 
         }
     }
+
+    
 
     public async void uploadFile(InputFileChangeEventArgs inputFileChangeEvent)
     {
