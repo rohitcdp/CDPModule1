@@ -6,5 +6,7 @@ namespace CDPModule1.Server.IServices
     {
         Task<List<Tenant>> GetAllTenants();
         Task<Tenant> GetById(Guid Id);
+        Task<ResponseModal> UpdateTenant(Tenant tenant);
+        Task<ResponseModal> DeleteTenant(Tenant tenant);
     }
 }

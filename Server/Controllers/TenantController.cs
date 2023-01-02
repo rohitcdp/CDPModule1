@@ -28,9 +28,25 @@ namespace CDPModule1.Server.Controllers
         [HttpGet]
         [Route("GetTenantById")]
         [Authorize(Roles = Roles.Admin)]
-        public Tenant GetTenantById([FromQuery] Guid Id)
+        public Tenant GetTenantById(Guid Id)
         {
             return _tenantService.GetById(Id).Result;
+        }
+
+        [HttpPost]
+        [Route("UpdateTenant")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<ResponseModal> UpdateTenant(Tenant tenant)
+        {
+            return await _tenantService.UpdateTenant(tenant);
+        }
+
+        [HttpPost]
+        [Route("DeleteTenant")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<ResponseModal> DeleteTenant(Tenant tenant)
+        {
+            return await _tenantService.DeleteTenant(tenant);
         }
     }
 }

@@ -34,41 +34,44 @@ namespace CDPModule1.Server.Controllers
         [Route("uploadPdf")]
         //  public async Task<ActionResult<List<UploadResult>>> uploadPdf(List<IFormFile> files)
         // public async Task<IActionResult> uploadPdf(List<IFormFile> files)
-        public async Task<String> uploadPdf([FromForm] List<IFormFile> files)
+
+        // public async Task<string> uploadPdf([FromForm] List<IFormFile> files)
+        public async Task<string> uploadPdf(FileResultContent fileContent)
         {
             try
             {
                 List<UploadResult> uploadResults = new List<UploadResult>();
 
-                // foreach (var file in files)
-                //  {
-                var file = files[0];
-                string ext = Path.GetExtension(file.FileName);
+             
+                byte[] file = Convert.FromBase64String(fileContent.base64Content);
+                string ext = fileContent.fileExt;
                 var uploadResult = new UploadResult();
                 string trustedFileNameForFileStorage;
-                var untrustedFileName = file.FileName;
+                var untrustedFileName = fileContent.existingFileName;//file.FileName;
                 uploadResult.FileName = untrustedFileName;
 
-                trustedFileNameForFileStorage = Path.GetRandomFileName().Split('.')[0] + ext;
+                trustedFileNameForFileStorage = fileContent.newFileName + "." + ext;//Path.GetRandomFileName().Split('.')[0] + ext;
                 var path = Path.Combine("C:\\Users\\Administrator\\source\\repos\\rohitcdp\\CDPModule1\\Server\\pdfs", trustedFileNameForFileStorage);
 
                 await using FileStream fs = new(path, FileMode.Create);
-                await file.CopyToAsync(fs);
+                // await file.CopyToAsync(fs);
+
                 //reading pdf
                 var doc = new GcPdfDocument();
-                doc.Load(fs);
+                doc.Load(new MemoryStream(file));
 
                 //To extract Page 1
                 var tmap_page2 = doc.Pages[0].GetTextMap();
                 tmap_page2.GetFragment(out TextMapFragment newFragment, out string Extractedtext);
                 //file upload
                 uploadResult.StoredFileName = trustedFileNameForFileStorage;
-                uploadResult.ContentType = file.ContentType;
+                uploadResult.ContentType = "pdf";
                 uploadResults.Add(uploadResult);
                 fs.Close();
+                System.IO.File.WriteAllBytes(path, file);
+
                 await ExportPDFToExcel(Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage), path);
                 var newpath = Path.GetFullPath("C:/Users/Administrator/source/repos/rohitcdp/CDPModule1/Server/htmlfiles/" + Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage) + ".html");
-
 
                 string d = System.IO.File.ReadAllText(newpath);
                 int index1 = d.IndexOf("<body");
@@ -84,38 +87,39 @@ namespace CDPModule1.Server.Controllers
                         int index = substr.IndexOf("<defs>");
                         substr = substr.Remove(index, substr.IndexOf("</defs>"));
                     }
-
                 }
-                //return substr;
                 // cdpContext.FileUploads.Add(uploadResult);
                 //  }
 
                 //await cdpContext.SaveChangesAsync();
-
-
                 substr = substr.Replace("<text", "<text class='pickText'");
                 substr = substr.Replace("url(#clip", "CustomId");
                 substr = substr.Replace("clip-path", "id");
                 substr = substr.Replace(")\">", "\">");
                 return substr;
-               // return Ok(substr);
             }
             catch (Exception ex)
             {
                 return string.Empty;
-               // return BadRequest(ex.Message);
             }
         }
 
         [Obsolete]
         private async Task ExportPDFToExcel(string fileName, string path)
         {
-            PdfDocument pdf = new PdfDocument(path);
-            int pageCount = pdf.Pages.Count;
-            pdf.LoadFromFile(path);
-            //string htmlData = pdf.SetPdfToHtmlParameter;
-            pdf.SaveToFile("htmlfiles/" + fileName + ".html", FileFormat.HTML);
-            //  Helper.Helper.XlsxToHTML(fileName + ".xlsx");
+            try
+            {
+                PdfDocument pdf = new PdfDocument(path);
+                int pageCount = pdf.Pages.Count;
+                pdf.LoadFromFile(path);
+                //string htmlData = pdf.SetPdfToHtmlParameter;
+                pdf.SaveToFile("htmlfiles/" + fileName + ".html", FileFormat.HTML);
+                //  Helper.Helper.XlsxToHTML(fileName + ".xlsx");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
         }
 
@@ -128,9 +132,10 @@ namespace CDPModule1.Server.Controllers
             var d = System.IO.File.ReadAllText(path);
             return new ResponseModal { Data = d, Message = StatusConstant.SUCCESS, StatusCode = 200 };
         }
-
-
-        //[HttpPost]
+    }
+}
+    
+    //[HttpPost]
         //[System.Web.Http.Route("upload")]
         //public ResponseModal UploadFile([FromBody] IFormFile formFile)
         //{
@@ -157,5 +162,5 @@ namespace CDPModule1.Server.Controllers
         //        throw ex;
         //    }
         //}
-    }
-}
+        //}
+        //}

@@ -28,8 +28,10 @@ builder.Services.AddDbContext<CDPDbContext>(options => options.UseSqlServer(
 builder.Services.AddScoped(typeof(BaseEntity));
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ITenantService, TenantService>();
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<MailSender>();
 
 

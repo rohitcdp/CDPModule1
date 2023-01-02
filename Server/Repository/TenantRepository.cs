@@ -22,5 +22,30 @@ namespace CDPModule1.Server.Repository
         {
             return await dbContext.Tenants.Where(x=>x.Id == Id).FirstOrDefaultAsync();
         }
+
+        public async Task<Tenant> UpdateTenant(Tenant tenant)
+        {
+            dbContext.Tenants.Update(tenant);
+            await dbContext.SaveChangesAsync();
+            return tenant;
+        }
+        public async Task<bool> DeleteTenant(Tenant tenant)
+        {
+            try
+            {
+                var users = await dbContext.Users.Where(x => x.TenantId == tenant.Id).Select(x=>x).ToListAsync();
+                if(users.Count <= 0)
+                {
+                    dbContext.Tenants.Remove(tenant);
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/add_tenant"
+@page "/add_tenant/{Id}"
 
 @using CDPModule1.Client.Services;
 @using CDPModule1.Shared
@@ -7,9 +8,9 @@
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>TenantForm</PageTitle>
 
-<h1>Add Tenant</h1>
+<h1>Tenant</h1>
 
 
 <EditForm Model="@tenant" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
@@ -84,7 +85,7 @@
     public Tenant tenant { get; set; }
 
     [Parameter]
-  //  public string Id { get; set; }
+    public string Id { get; set; }
 
     public List<Tenant> allTenants { get; set; }
 
@@ -98,9 +99,11 @@
         tenant = new Tenant();
         Message = string.Empty;
         GetTenants();
-        //Console.WriteLine(Id);
-      //  httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-       // tenant = await httpClient.GetFromJsonAsync<Tenant>("api/Tenant/GetById?Id=" + Id);
+        Console.WriteLine(Id);
+        token = await localStorageService.GetItem<string>("token");
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        tenant = await httpClient.GetFromJsonAsync<Tenant>("api/Tenant/GetTenantById?Id=" + Id);
         //tenant = await result.Content.ReadFromJsonAsync<Tenant>();
 
     }
@@ -121,12 +124,21 @@
             tenant.CreatedOn = DateTime.Now;
             tenant.ModifiedOn = DateTime.Now;
             tenant.IsDeleted = false;
-            httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var result = await httpClient.PostAsJsonAsync("api/Account/AddTenant", tenant);
-            ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            ResponseModal? responseModal = null;
+            if(tenant.Id != new Guid())
+            {
+                var result = await httpClient.PostAsJsonAsync("api/Tenant/UpdateTenant", tenant);
+                responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            }
+            else
+            {
+               var result = await httpClient.PostAsJsonAsync("api/Account/AddTenant", tenant);
+               responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+             
+            }
             if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
             {
                 tenant = new Tenant();

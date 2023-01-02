@@ -11,6 +11,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Action</th>
             <th>Name</th>
             <th>Email</th>
             <th>UserType</th>
@@ -22,6 +23,10 @@
         @foreach (var user in @UserList)
         {
             <tr>
+                <td>
+                    <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
+                    <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
+                </td>
                 <td>@user.Name</td>
                 <td>@user.Email</td>
                 <td>@user.UserType</td>
@@ -36,14 +41,46 @@
     [Parameter]
     public List<User> UserList { get; set; }
 
+    public string token = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        var token = await localStorageService.GetItem<string>("token");
+        token = await localStorageService.GetItem<string>("token");
+        UserList = await Reload();
+    }
+
+    public void CreateNew() => NavManager.NavigateTo("/add_user/", true);
+
+    public void OpenEdit(Guid Id) => NavManager.NavigateTo("/add_user/" + Id, true);
+
+    public async Task Delete(Guid Id)
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        //var u =  UserList.Where(x => x.Id == Id).FirstOrDefault();
+        httpClient.DefaultRequestHeaders
+    .Accept
+    .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+
+        HttpResponseMessage result = await httpClient.PostAsJsonAsync("api/User/DeleteUser",Id);
+        try
+        {
+            ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            if (responseModal.Message == "Success")
+            {
+                UserList = await Reload();
+            }
+        }catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+    
+    public async Task<List<User>> Reload()
+    {
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/Account/GetAllUsers");
-        UserList = await result.Content.ReadFromJsonAsync<List<User>>();
+        return await result.Content.ReadFromJsonAsync<List<User>>();        
     }
-
-    public void CreateNew() => NavManager.NavigateTo("/add_user", true);
 }

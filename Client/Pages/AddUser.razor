@@ -1,4 +1,5 @@
 ﻿@page "/add_user"
+@page "/add_user/{Id}"
 
 @using CDPModule1.Client.Services;
 @using CDPModule1.Shared
@@ -10,9 +11,9 @@
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>UserForm</PageTitle>
 
-<h1>Add User</h1>
+<h1>User</h1>
 
 <EditForm Model="@user" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
@@ -104,6 +105,9 @@
 
 @code {
     [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
     public UserModal user { get; set; }
 
     public Guid TenantId { get; set; }
@@ -137,6 +141,27 @@
             string? value = claimObject.Value;
             user.TenantId = new Guid(value);
         }
+        if (!string.IsNullOrEmpty(Id))
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var userRes = await httpClient.GetFromJsonAsync<User>("api/User/GetById?Id=" + Id);
+            user.Id = userRes.Id;
+            user.Address = userRes.Address;
+            user.IsEmailVerified = userRes.IsEmailVerified;
+            user.IsDeleted = userRes.IsDeleted;
+            user.TenantId = userRes.TenantId;
+            user.Country = userRes.Country;
+            user.Gender = userRes.Gender;
+            user.DOB = userRes.DOB;
+            user.Email = userRes.Email;
+            user.Name = userRes.Name;
+            user.UserType = userRes.UserType;
+            user.Password = userRes.Password;
+            TenantId = user.TenantId;
+
+        }
+           
     }
 
     public async void Save()
@@ -151,8 +176,19 @@
             }
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var result = await httpClient.PostAsJsonAsync("api/Account/AddUser", user);
-            ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            ResponseModal? responseModal;
+            if(user.Id != new Guid())
+            {
+                var result = await httpClient.PostAsJsonAsync("api/User/UpdateUser", user);
+                responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+
+            }
+            else
+            {
+                var result = await httpClient.PostAsJsonAsync("api/Account/AddUser", user);
+                responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+
+            }
             if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
             {
                 user.Email = string.Empty;

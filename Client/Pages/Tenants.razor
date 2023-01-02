@@ -13,6 +13,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Action</th>
             <th>Name</th>
             <th>Email</th>
             <th>Contact</th>
@@ -27,6 +28,10 @@
         @foreach (var user in @TenantList)
         {
             <tr>
+                <td>
+                    <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
+                    <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
+                </td>
                 <td>@user.Name</td>
                 <td>@user.Email</td>
                 <td>@user.Contact</td>
@@ -43,15 +48,37 @@
     [Parameter]
     public List<Tenant> TenantList { get; set; }
 
+    public string token = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        var token = await localStorageService.GetItem<string>("token");
+        token = await localStorageService.GetItem<string>("token");
+        TenantList = await Reload();
+    }
+
+    public void CreateNew() => NavManager.NavigateTo("/add_tenant/", true);
+
+    public void OpenEdit(Guid Id) => NavManager.NavigateTo("/add_tenant/"+Id, true);
+
+    public async Task Delete(Guid Id)
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var selectedTenant = TenantList.Where(x => x.Id == Id).FirstOrDefault();
+        var result = await httpClient.PostAsJsonAsync("api/Tenant/DeleteTenant", selectedTenant);
+        ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+        if(responseModal.Message == "Success")
+        {
+            TenantList = await Reload();
+        }
+    }
+
+    public async Task<List<Tenant>> Reload()
+    {
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
-        TenantList = await result.Content.ReadFromJsonAsync<List<Tenant>>();
+        return await result.Content.ReadFromJsonAsync<List<Tenant>>(); 
     }
-
-    public void CreateNew() => NavManager.NavigateTo("/add_tenant", true);
 }
 
