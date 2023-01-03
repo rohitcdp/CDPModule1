@@ -70,10 +70,10 @@ namespace CDPModule1.Server.Controllers
                 fs.Close();
                 System.IO.File.WriteAllBytes(path, file);
 
-                await ExportPDFToExcel(Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage), path);
+                string dat=await ExportPDFToExcel(Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage), path);
                 var newpath = Path.GetFullPath("C:/Users/Administrator/source/repos/rohitcdp/CDPModule1/Server/htmlfiles/" + Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage) + ".html");
 
-                string d = System.IO.File.ReadAllText(newpath);
+                string d = dat;// System.IO.File.ReadAllText(newpath);
                 int index1 = d.IndexOf("<body");
                 int index2 = d.IndexOf("</body>");
                 string substr = d.Substring(index1, d.Length - index1);
@@ -104,17 +104,17 @@ namespace CDPModule1.Server.Controllers
             }
         }
 
-        [Obsolete]
-        private async Task ExportPDFToExcel(string fileName, string path)
+        private async Task<string> ExportPDFToExcel(string fileName, string path)
         {
             try
             {
                 PdfDocument pdf = new PdfDocument(path);
                 int pageCount = pdf.Pages.Count;
                 pdf.LoadFromFile(path);
-                //string htmlData = pdf.SetPdfToHtmlParameter;
-                pdf.SaveToFile("htmlfiles/" + fileName + ".html", FileFormat.HTML);
-                //  Helper.Helper.XlsxToHTML(fileName + ".xlsx");
+                MemoryStream ms= new MemoryStream();
+                pdf.SaveToStream(ms,FileFormat.HTML);
+                var data = System.Text.Encoding.Default.GetString(ms.ToArray());
+                return data;
             }
             catch (Exception ex)
             {

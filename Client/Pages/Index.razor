@@ -14,12 +14,18 @@
 @inject ILocalStorageService localStorageService;
 
 
-<div >
+<h3>Settings</h3>
+
+<div>
     <h1>Upload File </h1>
-    <InputFile OnChange="@uploadPdfNew" id="FileUpload1"/>
+    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" />
 </div>
 <label>Html upload data ..</label>
-@htmlCode
+
+@((MarkupString)@htmlCode.Replace("\r\n", "<br />"));
+    
+
+
 
 @code {
 
@@ -31,126 +37,39 @@
     {
         try
         {
+            var file = inputFileChangeEvent.File;
+            byte[] buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            string base64 = Convert.ToBase64String(buffer);
             using var dataContent = new MultipartFormDataContent();
 
-            //  foreach (var file in inputFileChangeEvent.GetMultipleFiles())
-            // {
-            var file = inputFileChangeEvent.File;
-            var fileContent = new StreamContent(file.OpenReadStream());
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
-            dataContent.Add(
-                content: fileContent,
-                name: "\"files\"",
-                fileName: file.Name);
-            //}
-
+        
             httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            httpClient.DefaultRequestHeaders.Add("ContentType", "multipart/form-data");
+            httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
 
-            var res = await httpClient.PostAsync("api/File/uploadPdf", dataContent);
-            string responseModal =  res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var content = new FileResultContent
+                {
+                    base64Content = base64,
+                    fileExt = "pdf",
+                    existingFileName = file.Name,
+                    newFileName = Path.GetRandomFileName().Split('.')[0]
+
+                };
+            var res = await httpClient.PostAsJsonAsync("api/File/uploadPdf", content);
+            string responseModal = await res.Content.ReadAsStringAsync();
             if (!string.IsNullOrEmpty(responseModal))
             {
                 htmlCode = responseModal;
             }
 
-            //   var newUploadResults = await res.Content.ReadFromJsonAsync<List<UploadResult>>();
 
-            //if (newUploadResults is not null)
-            //{
-            //    uploadResults = uploadResults.Concat(newUploadResults).ToList();
-
-            //}
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             Console.WriteLine("error");
             htmlCode = "Error in api";
-        }
-    }
-
-    public async void uploadPdf(InputFileChangeEventArgs inputFileChangeEvent)
-    {
-        try
-        {
-            //string token = await localStorageService.GetItem<string>("token");
-            //httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            //httpClient.DefaultRequestHeaders.Add("Content-Type", "multipart/form-data");
-            //var result = await httpClient.PostAsJsonAsync("api/File/upload", inputFileChangeEvent);
-            //ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
-            //if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
-            //{
-
-            //}
-
-
-
-            //StringBuilder text = new StringBuilder();
-            //string path = Path.Combine(@"C:\Users\Administrator\Documents\CDP\", inputFileChangeEvent.File.Name);
-
-            //PdfReader pdfReader = new PdfReader(path);
-            //PdfDocument pdfDocument = new PdfDocument(pdfReader);
-            //for (int index = 1; index <= pdfDocument.GetNumberOfPages(); index++)
-            //{
-            //    ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
-            //    var page = pdfDocument.GetPage(index);
-            //    string currentText = PdfTextExtractor.GetTextFromPage(page, strategy);
-            //    currentText = Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.UTF8.GetBytes(currentText)));
-            //    text.Append(currentText);
-            //}
-            //pdfReader.Close();
-            //File.WriteAllText("C:\\UserLogger Session.pdf.xls", text.ToString());
-
-
-
-            var file = inputFileChangeEvent.File;
-            byte[] buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            string base64 = Convert.ToBase64String(buffer);
-        }
-        catch (Exception ex)
-        {
-
-        }
-    }
-
-    
-
-    public async void uploadFile(InputFileChangeEventArgs inputFileChangeEvent)
-    {
-        try
-        {
-            var file = inputFileChangeEvent.File;
-            byte[] buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            string base64 = Convert.ToBase64String(buffer);
-            var doc = new GcPdfDocument();
-            doc.Load(new MemoryStream(Convert.FromBase64String(base64)));
-            //To extract Page 1
-            var tmap_page2 = doc.Pages[0].GetTextMap();
-            tmap_page2.GetFragment(out TextMapFragment newFragment, out string Extractedtext);
-
-            Console.WriteLine("Extracted Text: \n\n" + Extractedtext);
-            //var file = inputFileChangeEvent.File;
-            //byte[] buffer = new byte[file.Size];
-            //file.OpenReadStream().ReadAsync(buffer);
-            //string base64 = Convert.ToBase64String(buffer);
-            //string path = "pdfs\\sample1.pdf";
-            //FileStream fs = new(path, FileMode.Create);
-            //await file.OpenReadStream().CopyToAsync(fs);
-            //using (var stream = File.OpenRead(path))
-            //using (UglyToad.PdfPig.PdfDocument document = UglyToad.PdfPig.PdfDocument.Open(stream))
-            //{
-            //    var page = document.GetPage(1);
-            //    string data = string.Join(" ", page.GetWords());
-            //}
-
-        }
-        catch (Exception ex)
-        {
-
         }
     }
 }

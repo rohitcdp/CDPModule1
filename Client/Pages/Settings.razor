@@ -1,9 +1,11 @@
 ﻿@page "/settings"
+
 @inject HttpClient Http
 @inject IJSRuntime JS
 @using System.Text;
 @using CDPModule1.Client.Services;
 @using CDPModule1.Shared;
+@using CDPModule1.Shared.RequestModel
 @using GrapeCity.Documents.Pdf;
 @using GrapeCity.Documents.Pdf.TextMap;
 @using System.Net.Http.Headers;
@@ -12,70 +14,117 @@
 @using iText.Kernel.Pdf.Canvas.Parser;
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
+@inject IApiService IApiService;
+
+<PageTitle>Settings</PageTitle>
+<h1>Settings</h1>
+
+<EditForm Model="@user" OnValidSubmit="@Update" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row">
+        <label for="confirm" class="col-md-2 col-form-label">Name:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="user.Name" />
+            <ValidationMessage For="@(() => user.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="email" class="col-md-2 col-form-label">Email:</label>
+        <div class="col-md-10">
+            <InputText type="email" id="email" class="form-control" @bind-Value="user.Email" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="password" class="col-md-2 col-form-label">Password:</label>
+        <div class="col-md-10">
+            <InputText type="password" id="password" class="form-control" @bind-Value="user.Password" />
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="address" class="col-md-2 col-form-label">Address:</label>
+        <div class="col-md-10">
+            <InputText id="address" class="form-control" @bind-Value="user.Address" />
+            <ValidationMessage For="@(() => user.Address)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="dob" class="col-md-2 col-form-label">DOB:</label>
+        <div class="col-md-10">
+            <InputDate id="dob" class="form-control" @bind-Value="user.DOB" />
+            <ValidationMessage For="@(() => user.DOB)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="dob" class="col-md-2 col-form-label">Gender</label>
+        <div class="col-md-10">
+            <InputRadioGroup @bind-Value="user.Gender">
+                <InputRadio Value="@("Female")" /> @("Female")
+                <InputRadio Value="@("Male")" /> @("Male")
+            </InputRadioGroup>
+        </div>
+    </div>
+
+  @*    <div class="form-group row">
+    <label for="emailVerified" class="col-md-2 col-form-label">Is Email Verfified ?</label>
+    <div class="col-md-10">
+     <InputCheckbox  id="emailVerified" class="form-control" @bind-Value="user.IsEmailVerified"  />
+    <ValidationMessage For="@(() => user.IsEmailVerified)" />
+    </div>
+    </div>   *@
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Update</button>
+        </div>
+    </div>
+</EditForm>
 
 
-<h3>Settings</h3>
+@code{
 
-<div>
-    <h1>Upload File </h1>
-    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" />
-</div>
-<label>Html upload data ..</label>
-@htmlCode
-
-
-@code {
-
-    private List<UploadResult> uploadResults = new();
     [Parameter]
-    public string htmlCode { get; set; } = string.Empty;
+    public User user { get; set; }
 
-    public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
+    protected override async Task OnParametersSetAsync()
     {
+        Guid Id = await IApiService.GetLoggedInUserId();
+        var result = await IApiService.GetWithAuthAsync("api/User/GetById?Id=" + Id);
+        user = await result.Content.ReadFromJsonAsync<User>();
+    }
+
+    public async void Update()
+    {
+        UserModal userModal = new UserModal
+        {
+            Email = user.Email,
+            Address = user.Address,
+            Country = user.Country,
+            DOB = user.DOB,
+            Gender = user.Gender,
+            Id = user.Id,
+            IsDeleted = user.IsDeleted,
+            IsEmailVerified = user.IsEmailVerified,
+            Name = user.Name,
+            Password = user.Password,
+            TenantId = user.TenantId,
+            UserType = user.UserType
+        };
         try
         {
-            var file = inputFileChangeEvent.File;
-            byte[] buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            string base64 = Convert.ToBase64String(buffer);
-            using var dataContent = new MultipartFormDataContent();
-
-            //var file = inputFileChangeEvent.File;
-            //var fileContent = new StreamContent(file.OpenReadStream());
-            //fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
-            //dataContent.Add(
-            //    content: fileContent,
-            //    name: "\"files\"",
-            //    fileName: file.Name);
-
-
-            httpClient.DefaultRequestHeaders.Clear();
-            string token = await localStorageService.GetItem<string>("token");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
-
-            var content = new FileResultContent
-                {
-                    base64Content = base64,
-                    fileExt = "pdf",
-                    existingFileName = file.Name,
-                    newFileName = Path.GetRandomFileName().Split('.')[0]
-
-                };
-                       var res = await httpClient.PostAsJsonAsync("api/File/uploadPdf", content);
-            string responseModal = await res.Content.ReadFromJsonAsync<string>();
-            if (!string.IsNullOrEmpty(responseModal))
-            {
-                htmlCode = responseModal;
-            }
-
-            
-        }
-        catch (Exception ex)
+            var result = await IApiService.PostWithAuthAsync("api/User/UpdateUser", userModal);
+            ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+        }catch(Exception ex)
         {
-            Console.WriteLine("error");
-            htmlCode = "Error in api";
+            throw ex;
         }
+
     }
 }
