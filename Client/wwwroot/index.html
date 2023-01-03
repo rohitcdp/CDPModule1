@@ -22,8 +22,9 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script>
+    <script type='text/javascript'>
 
         //Data
         var data = [{
@@ -171,7 +172,7 @@
 
         //function
         function getChart(ChartType) {
-           // alert(ChartType);
+            // alert(ChartType);
             //document.getElementById('chartDiv').className = ChartType;
 
             if (ChartType == "PieChart") {
@@ -185,6 +186,45 @@
             }
 
         }
+
+
+
+        //data click
+        function getText(current) {
+
+            var text = current.innerHTML;
+            var Xposition =current.getAttribute('x');
+            var Yposition = current.getAttribute('y');
+            var GID = current.parentNode.getAttribute('id');
+
+            var data = {
+                TemplateName: 'MyTemplate',
+                FieldName: 'PanCard',
+                ParentIdentifier: GID,
+                XPosition: Xposition,
+                Yposition: Yposition,
+                Text: text
+            }
+
+            console.log(data);
+
+            $.ajax({
+                url: 'api/File/SaveTemplate/',
+                dataType: "json",
+                contentType: 'application/json',
+                cache: false,
+                data: data,
+                type: 'POST',
+                success: function (data) {
+                    data = JSON.parse(data);
+                },error: function (error) {
+                    console.log(error);
+                }
+            });
+
+        }
+
+
 
 
     </script>

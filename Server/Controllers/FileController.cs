@@ -31,11 +31,16 @@ namespace CDPModule1.Server.Controllers
         }
 
         [HttpPost]
-        [Route("uploadPdf")]
-        //  public async Task<ActionResult<List<UploadResult>>> uploadPdf(List<IFormFile> files)
-        // public async Task<IActionResult> uploadPdf(List<IFormFile> files)
+        [Route("SaveTemplate")]
+        [AllowAnonymous]
+        public async Task<dynamicInvoiceTemplate> SaveTemplate(dynamicInvoiceTemplate di)
+        {
+            string templatename = di.TemplateName;
+            return di;
+        }
 
-        // public async Task<string> uploadPdf([FromForm] List<IFormFile> files)
+        [HttpPost]
+        [Route("uploadPdf")]
         public async Task<string> uploadPdf(FileResultContent fileContent)
         {
             try
@@ -80,22 +85,20 @@ namespace CDPModule1.Server.Controllers
                 substr = substr.Replace("</html>", string.Empty);
                 int countDef = Regex.Matches(substr, "<defs>").Count();
 
-                for (int i = 0; i < countDef; i++)
-                {
-                    if (substr.Contains("<defs>"))
-                    {
-                        int index = substr.IndexOf("<defs>");
-                        substr = substr.Remove(index, substr.IndexOf("</defs>"));
-                    }
-                }
-                // cdpContext.FileUploads.Add(uploadResult);
-                //  }
+                //for (int i = 0; i < countDef; i++)
+                //{
+                //    if (substr.Contains("<defs>"))
+                //    {
+                //        int index = substr.IndexOf("<defs>");
+                //        substr = substr.Remove(index, substr.IndexOf("</defs>"));
+                //    }
+                //}
 
-                //await cdpContext.SaveChangesAsync();
-                substr = substr.Replace("<text", "<text class='pickText'");
+                substr = substr.Replace("<text", "<text class='pickText' onclick=getText(this)");
                 substr = substr.Replace("url(#clip", "CustomId");
                 substr = substr.Replace("clip-path", "id");
                 substr = substr.Replace(")\">", "\">");
+                substr = substr.Replace("<image", "<image style=\"display:none\"");
                 return substr;
             }
             catch (Exception ex)
