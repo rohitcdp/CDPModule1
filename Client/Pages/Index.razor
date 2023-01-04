@@ -19,11 +19,26 @@
 <div>
     <h1>Upload File </h1>
     <InputFile OnChange="@uploadPdfNew" id="FileUpload1" />
+    <select id="valueType">
+        <option value="1">Dynamic</option>
+        <option value="2">Static</option>
+    </select>
+    <select id="valueType">
+        <option value="invoicedate">Invoice Date</option>
+        <option value="pannumber">Pan number</option>
+        <option value="addresss">Address</option>
+    </select>
+    <button>Map Property</button>
+    <button>Save</button>
+    <input type="text" name="name" id="propText" />
 </div>
+
+
+
 <label>Html upload data ..</label>
 
 @((MarkupString)@htmlCode.Replace("\r\n", "<br />"));
-    
+
 
 
 
@@ -32,6 +47,12 @@
     private List<UploadResult> uploadResults = new();
     [Parameter]
     public string htmlCode { get; set; } = string.Empty;
+
+    public int dataTypeSelected = 2;
+
+    public string staticData = string.Empty;
+
+    public List<string> DataTypeList = new List<string> { 1.ToString(), 2.ToString() };
 
     public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {
@@ -43,7 +64,7 @@
             string base64 = Convert.ToBase64String(buffer);
             using var dataContent = new MultipartFormDataContent();
 
-        
+
             httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);

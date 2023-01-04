@@ -13,6 +13,7 @@
 </head>
 
 <body>
+
     <div id="app">Loading...</div>
 
     <div id="blazor-error-ui">
@@ -24,8 +25,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script type='text/javascript'>
-
+    <script type="text/javascript">
         //Data
         var data = [{
             "id": 1,
@@ -192,10 +192,13 @@
         //data click
         function getText(current) {
 
+
             var text = current.innerHTML;
-            var Xposition =current.getAttribute('x');
+            var Xposition = current.getAttribute('x');
             var Yposition = current.getAttribute('y');
             var GID = current.parentNode.getAttribute('id');
+
+            $('#propText').val(text);
 
             var data = {
                 TemplateName: 'MyTemplate',
@@ -203,24 +206,28 @@
                 ParentIdentifier: GID,
                 XPosition: Xposition,
                 Yposition: Yposition,
-                Text: text
+                Text: text,
+                Type: 'dynamic'
             }
 
             console.log(data);
+            console.log($('#propText').val());
 
-            $.ajax({
-                url: 'api/File/SaveTemplate/',
-                dataType: "json",
-                contentType: 'application/json',
-                cache: false,
-                data: data,
-                type: 'POST',
-                success: function (data) {
-                    data = JSON.parse(data);
-                },error: function (error) {
-                    console.log(error);
-                }
-            });
+            //$.ajax({
+            //    url: 'api/File/SaveTemplate',
+            //    //dataType: "json",
+            //    contentType: 'application/json',
+            //    cache: false,
+            //    data: data,
+            //    method: 'POST',
+            //    success: function (data) {
+            //        debugger;
+            //        data = JSON.parse(data);
+            //    }, error: function (error) {
+            //        debugger;
+            //        console.log(error);
+            //    }
+            //});
 
         }
 

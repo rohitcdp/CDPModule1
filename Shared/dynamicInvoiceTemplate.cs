@@ -14,5 +14,8 @@ namespace CDPModule1.Shared
         public string XPosition { get; set; }
         public string YPosition { get; set; }
         public string Text { get; set; }
+        public int Type { get; set; } 
     }
+
+
 }
