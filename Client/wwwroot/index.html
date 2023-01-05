@@ -190,44 +190,78 @@
 
 
         //data click
+        var data = [];
         function getText(current) {
 
 
             var text = current.innerHTML;
-            var Xposition = current.getAttribute('x');
-            var Yposition = current.getAttribute('y');
-            var GID = current.parentNode.getAttribute('id');
+            //var Xposition = current.getAttribute('x');
+            //var Yposition = current.getAttribute('y');
+            //var GID = current.parentNode.getAttribute('id');
+
+           
+
+            var d = {
+                TemplateName: $('#templateName').val(),
+                FieldName: $('#valueType').val(),
+                ParentIdentifier: current.parentNode.getAttribute('id'),
+                XPosition: current.getAttribute('x'),
+                Yposition: current.getAttribute('y'),
+                Text:text,
+                Type: 1
+            }
 
             $('#propText').val(text);
 
-            var data = {
-                TemplateName: 'MyTemplate',
-                FieldName: 'PanCard',
-                ParentIdentifier: GID,
-                XPosition: Xposition,
-                Yposition: Yposition,
-                Text: text,
-                Type: 'dynamic'
-            }
+            data.push(d);
 
             console.log(data);
-            console.log($('#propText').val());
 
-            //$.ajax({
-            //    url: 'api/File/SaveTemplate',
-            //    //dataType: "json",
-            //    contentType: 'application/json',
-            //    cache: false,
-            //    data: data,
-            //    method: 'POST',
-            //    success: function (data) {
-            //        debugger;
-            //        data = JSON.parse(data);
-            //    }, error: function (error) {
-            //        debugger;
-            //        console.log(error);
-            //    }
-            //});
+
+        }
+
+        function insertData() {
+
+           
+
+            //var request;
+            //if (window.XMLHttpRequest) {
+            //    //New browsers.
+            //    request = new XMLHttpRequest();
+            //}
+            //else if (window.ActiveXObject) {
+            //    //Old IE Browsers.
+            //    request = new ActiveXObject("Microsoft.XMLHTTP");
+            //}
+
+            //if (request != null) {
+            //    var url = "api/File/SaveTemplate";
+            //    request.open("POST", url, false);
+            //    var params = data;
+            //    request.setRequestHeader("Content-Type", "application/json");
+            //    request.onreadystatechange = function () {
+            //        if (request.readyState == 4 && request.status == 200) {
+            //            var response = JSON.parse(request.responseText);
+            //            console.log(response);
+            //        }
+            //    };
+            //    request.send(params);
+            //}
+
+
+            console.log('==> insertdata==>', data);
+
+            $.ajax({
+                url: 'api/File/SaveTemplate',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                method: 'POST',
+                success: function (data) {
+                    data = JSON.parse(data);
+                }, error: function (error) {
+                    console.log(error);
+                }
+            });
 
         }
 
