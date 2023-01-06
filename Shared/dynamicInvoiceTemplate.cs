@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CDPModule1.Shared
 {
-    public class dynamicInvoiceTemplateVM : BaseEntity
+    public class dynamicInvoiceTemplateVM 
     {
         public string TemplateName { get; set; }
         public string FieldName { get; set; }
@@ -26,8 +26,6 @@ namespace CDPModule1.Shared
         public string YPosition { get; set; }
         public string Text { get; set; }
         public int Type { get; set; }
-
-
         public DateTime? CreatedOn { get; set; }
         public DateTime? ModifiedOn { get; set; }
     }
