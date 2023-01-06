@@ -10,6 +10,7 @@
 @using iText.Kernel.Pdf;
 @using iText.Kernel.Pdf.Canvas.Parser.Listener;
 @using iText.Kernel.Pdf.Canvas.Parser;
+@using static CDPModule1.Client.Services.EnumService;
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
@@ -27,11 +28,11 @@
         <option value="1">Dynamic</option>
         <option value="2">Static</option>
     </select>
-    <select id="valueType">
-        <option value="invoicedate">Invoice Date</option>
-        <option value="pannumber">Pan number</option>
-        <option value="addresss">Address</option>
-        <option value="addresss">Refrence number</option>
+    <select id="Field">
+        @foreach (var f in Enum.GetValues(typeof(FieldType)))
+        {
+            <option value="@f">@f</option>
+        }
     </select>
     <button>Map Property</button>
     <button onclick="insertData()">Save</button>
@@ -58,6 +59,8 @@
     public string staticData = string.Empty;
 
     public List<string> DataTypeList = new List<string> { 1.ToString(), 2.ToString() };
+
+    
 
     public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {
