@@ -33,7 +33,7 @@ namespace CDPModule1.Server.Controllers
         [HttpPost]
         [Route("SaveTemplate")]
         [AllowAnonymous]
-        public async Task<List<dynamicInvoiceTemplateVM>> SaveTemplate([FromBody] List<dynamicInvoiceTemplateVM> di)
+        public async Task<List<DynamicInvoiceTemplateVM>> SaveTemplate([FromBody] List<DynamicInvoiceTemplateVM> di)
         {
             return di;
         }

@@ -23,11 +23,11 @@ namespace CDPModule1.Shared
         public int TotalPages { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public Guid UserId { get; set; }
+        public Guid UplodedBy { get; set; }
         [ForeignKey("UserId")]
         public User? User { get; set; }
-        public Guid TenantId { get; set; }
-        [ForeignKey("TenantId")]
-        public Tenant? Tenant { get; set; }
+        public Guid TemplateId { get; set; }
+        [ForeignKey("Id")]
+        public InvoiceTemplate InvoiceTemplate { get; set; }
     }
 }
