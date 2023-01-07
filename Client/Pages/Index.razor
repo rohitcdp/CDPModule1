@@ -14,39 +14,41 @@
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 
-
-<h3>Settings</h3>
-
-<div>
-    <input type="text" name="name" id="templateName" placeholder="Template Name" />
-    <br/>
-
     <h1>Upload File </h1>
-    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" />
-   
-    <select id="valueType">
-        <option value="1">Dynamic</option>
-        <option value="2">Static</option>
-    </select>
-    <select id="Field">
-        @foreach (var f in Enum.GetValues(typeof(FieldType)))
-        {
-            <option value="@f">@f</option>
-        }
-    </select>
-    <button>Map Property</button>
-    <button onclick="insertData()">Save</button>
+    <div class="row m-1"  >
+    <label class="col-2">Select File :</label>
+    <InputFile OnChange="@uploadPdfNew" id="FileUpload1" class="col-9"/>
+    </div>
+
+    <div class="row m-1">
+        <label class="col-2">Template Name :</label>
+        <input class="col-3" type="text" name="name" id="templateName" placeholder="Template Name" />
+     </div>
+
+     <div class="row m-1">
+        <label class="col-2">Template Type:</label>
+        <select id="valueType" class="col-6">
+            <option value="1">Dynamic</option>
+            <option value="2">Static</option>
+        </select>
+        <input id="static_type" class="col-4" type="text" placeholder="select" style="display:none" />
+    </div>
+
+    <div class="row m-1">
+     <label class="col-2">Filed Type: </label>
+        <select id="Field" class="col-6">
+            @foreach (var f in Enum.GetValues(typeof(FieldType)))
+            {
+                <option value="@f">@f</option>
+            }
+        </select>
+      </div>
+    <button class="btn btn-success m-1" type="button" >Map Property</button>
+    <button type="button" onclick="insertData()" class="btn btn-success m-1">Save</button>     
     <input type="text" name="name" placeholder="select a value" id="propText" />
-</div>
 
-
-
-<label>Html upload data ..</label>
 
 @((MarkupString)@htmlCode.Replace("\r\n", "<br />"));
-
-
-
 
 @code {
 
@@ -60,7 +62,8 @@
 
     public List<string> DataTypeList = new List<string> { 1.ToString(), 2.ToString() };
 
-    
+    public string TemplateName { get; set; }
+
 
     public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {

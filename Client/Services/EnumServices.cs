@@ -5,9 +5,11 @@
       public  enum FieldType
         {
             Invoice_Date,
+            Invoice_Number,
             PAN,
             Address,
-            Reference
+            Reference,
+            Custom //for custom value pair
         }
     }
 }
