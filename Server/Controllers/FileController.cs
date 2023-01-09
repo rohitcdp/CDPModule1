@@ -14,6 +14,7 @@ using CDPModule1.Server.Utils;
 using iText.Html2pdf.Attach.Impl.Layout;
 using System.Xml;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 //using Spire.Xls;
 
 namespace CDPModule1.Server.Controllers
@@ -41,7 +42,7 @@ namespace CDPModule1.Server.Controllers
                 {
                     foreach (var d in di)
                     {
-                        InvoiceTemplate it = await cdpContext.InvoiceTemplate.Where(x => x.TemplateName.Equals(d.TemplateName)).FirstOrDefault();
+                        InvoiceTemplate it = await  cdpContext.InvoiceTemplate.FirstOrDefaultAsync(x=>x.TemplateName==d.TemplateName);
                         if (it == null)
                         {
                             it = new InvoiceTemplate
@@ -50,7 +51,7 @@ namespace CDPModule1.Server.Controllers
                                 ModifiedBy = DateTime.Now,
                                 TemplateName = d.TemplateName
                             };
-                           it = await cdpContext.InvoiceTemplate.AddAsync(it);
+                            await cdpContext.InvoiceTemplate.AddAsync(it);
                             await cdpContext.SaveChangesAsync();
                         }
                         InvoiceTemplateInfo templateInfo = new InvoiceTemplateInfo
