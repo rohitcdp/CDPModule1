@@ -16,5 +16,7 @@ namespace CDPModule1.Shared
         public string Text { get; set; }
         public int Type { get; set; }
 
+        public Guid UserId { get; set; }
+
     }
 }

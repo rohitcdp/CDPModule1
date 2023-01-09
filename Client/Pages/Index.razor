@@ -31,7 +31,7 @@
             <option value="1">Dynamic</option>
             <option value="2">Static</option>
         </select>
-        <input id="static_type" class="col-4" type="text" placeholder="select" style="display:none" />
+        <input id="static_type" class="col-4" type="text" placeholder="Enter.."  />
     </div>
 
     <div class="row m-1">
@@ -42,11 +42,12 @@
                 <option value="@f">@f</option>
             }
         </select>
-      </div>
+        <input id="custom_filed" class="col-4" type="text" placeholder="Enter Field Name" />
+    </div>
+
+    <input type="text" name="name" placeholder="select a value" id="propText" />
     <button class="btn btn-success m-1" type="button" >Map Property</button>
     <button type="button" onclick="insertData()" class="btn btn-success m-1">Save</button>     
-    <input type="text" name="name" placeholder="select a value" id="propText" />
-
 
 @((MarkupString)@htmlCode.Replace("\r\n", "<br />"));
 

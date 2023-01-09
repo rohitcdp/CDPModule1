@@ -35,7 +35,43 @@ namespace CDPModule1.Server.Controllers
         [AllowAnonymous]
         public async Task<List<DynamicInvoiceTemplateVM>> SaveTemplate([FromBody] List<DynamicInvoiceTemplateVM> di)
         {
-            return di;
+            try
+            {
+                if (di.Count > 0)
+                {
+                    foreach (var d in di)
+                    {
+                        InvoiceTemplate it = await cdpContext.InvoiceTemplate.Where(x => x.TemplateName.Equals(d.TemplateName)).FirstOrDefault();
+                        if (it == null)
+                        {
+                            it = new InvoiceTemplate
+                            {
+                                CreatedBy = DateTime.Now,
+                                ModifiedBy = DateTime.Now,
+                                TemplateName = d.TemplateName
+                            };
+                           it = await cdpContext.InvoiceTemplate.AddAsync(it);
+                            await cdpContext.SaveChangesAsync();
+                        }
+                        InvoiceTemplateInfo templateInfo = new InvoiceTemplateInfo
+                        {
+                            FieldName = d.FieldName,
+                            TemplateId = it.Id,
+                            ParentIdentifier = d.ParentIdentifier,
+                            Text = d.Text,
+                            Type = d.Type,
+                            XPosition = d.XPosition,
+                            YPosition = d.YPosition
+                        };
+                        await cdpContext.InvoiceTemplateInfo.AddAsync(templateInfo);
+                        await cdpContext.SaveChangesAsync();
+                    }
+                }
+                return di;
+            }catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpPost]
