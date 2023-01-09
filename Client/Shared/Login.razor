@@ -9,7 +9,107 @@
 @inject ILocalStorageService localStorageService;
 @inject NavigationManager NavManager
 
-<div class="page"> 
+
+
+<div class="container">
+    <div class="section register min-vh-150 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Authentication card start -->
+                <EditForm Model="login" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
+                    <DataAnnotationsValidator />
+
+                    <div class="card shadow-lg">
+                        <div class="text-center">
+                            <img src="Images\logoi.png" alt="logo.png" height="170">
+                        </div>
+                        <h2 class="text-center mt-0"><b>Phoenix</b></h2>
+                        <div class="card-block">
+                            @* style="box-shadow: 10px 5px 10px 5px gray"*@
+                            <div class="row m-b-10">
+                                <div class="col-md-12">
+                                    <h4 class="text-center">Sign In</h4>
+                                </div>
+                            </div>
+                            <div class="form-floating" style="margin-right: 10px;margin-left: 10px">
+                                <input class="form-control" id="floatingInput" @bind="@login.Email" placeholder="Username">
+                                <label for="floatingInput"><b>Username</b></label>
+                                <ValidationMessage For="@(() =>login.Email)" class="text-danger" />
+                            </div><br>
+                            <div class="form-floating" style="    margin-right: 10px; margin-left: 10px;">
+                                <input type="password" @bind="@login.Password" class="form-control" id="floatingInput" placeholder="Password">
+                                <label for="floatingInput"><b>Password</b></label>
+                                <ValidationMessage For="@(() =>login.Password)" class="text-danger" />
+                            </div>
+                            <br>
+                            <div class="row m-t-25 text-left" style="margin-right: 10px; margin-left: 10px; margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <div class="checkbox-fade fade-in-primary d-">
+                                        <label>
+                                            <input type="checkbox" checked="checked" name="remember">
+                                            <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                            <span class="text-inverse">Remember me</span>
+                                        </label>
+                                    </div>
+                                    <div class="forgot-phone text-right f-right">
+                                        <a href="" @onclick="@GoToForgotPassword"> Forgot Password?</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            @* @if (LoginMesssage != "")
+                            {
+                            <label style="color:rgb(227,6,19)">@LoginMesssage</label>
+                            }*@
+                            @*<input type="submit" class="w-100  w-100 btn btn-lg btn-primary rounded-pill" value="Login" />*@
+                            <div class="text-center" style="margin-right: 10px; margin-left: 10px;margin-bottom: 10px;">
+                                <div class="row m-t-5">
+                                    <div class="col-md-12">
+                                        <input style="background-color:rgb(134,188,37);color:white;" type="submit" value="Login" class="w-100  w-100 btn btn-lg ">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+                <p>@message</p>
+
+                <!-- end of form -->
+            </div>
+            <!-- end of col-sm-12 -->
+        </div>
+        <!-- end of row -->
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*
+<div class="page">
 <h1>Login</h1>
 <EditForm Model="login" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
@@ -20,7 +120,7 @@
             <ValidationMessage For="@(() => login.Email)" />
         </div>
     </div>
-    
+
     <div class="form-group row">
         <label for="password" class="col-md-2 col-form-label">Password:</label>
         <div class="col-md-10">
@@ -28,7 +128,7 @@
             <ValidationMessage For="@(() => login.Password)" />
         </div>
      </div>
-   
+
     <div class="row">
         <div class="col-md-4 text-right">
             <button type="submit" class="btn btn-success">LOGIN</button>
@@ -38,12 +138,12 @@
             </div>
     </div>
 
-       
-</EditForm>
-<p>@message</p>
-</div> 
 
-@code{
+</EditForm>
+    <p>@message</p>
+</div>
+*@
+@code {
     AccountModal login = new AccountModal();
     bool isAdmin = false;
     string message = string.Empty;
@@ -52,13 +152,13 @@
     {
         var result = await httpClient.PostAsJsonAsync("api/Account/Login", login);
         ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
-        if(responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
+        if (responseModal?.StatusCode == 200 && responseModal?.Message == "Success")
         {
             message = responseModal.Message;
             await localStorageService.SetItem("token", responseModal.Data);
             await localStorageService.SetItem("id", responseModal.Data);
             await localStorageService.SetItem("userType", responseModal.Data);
-            NavManager.NavigateTo("/",true);
+            NavManager.NavigateTo("/", true);
         }
     }
 
@@ -67,4 +167,4 @@
         NavManager.NavigateTo("/forgotPassword", true);
         // api to change passowrd
     }
-  }
+}

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CDPModule1.Server.Migrations
 {
     [DbContext(typeof(CDPDbContext))]
-    [Migration("20230106185631_Initial")]
-    partial class Initial
+    [Migration("20230109113430_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

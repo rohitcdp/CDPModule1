@@ -74,9 +74,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         var handler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = handler.ReadJwtToken(await localStorageService.GetItem<string>("token"));
-        role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
+        string? token = await localStorageService.GetItem<string>("token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            if (jwtSecurityToken != null)
+                role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
+        }
     }
 
     private void ToggleNavMenu()

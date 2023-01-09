@@ -12,73 +12,166 @@
 
 <h1>Tenant</h1>
 
+<div class="row">
+    <div class="col-md-12">
+        <EditForm Model="@tenant" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="general-info">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col-md-16">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h5 class="text-uppercase mb-0">Tenant Info</h5>
+                                                        </div>
+                                                        <div class="list-group-item">
+                                                            <div class="form-group row">
+                                                            </div>
 
-<EditForm Model="@tenant" OnValidSubmit="@Save" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Name:</label>
-        <div class="col-md-10">
-            <InputText id="name" class="form-control" @bind-Value="tenant.Name" />
-            <ValidationMessage For="@(() => tenant.Name)" />
-        </div>
+                                                            <label>Tenant Name</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="	fas fa-portrait"></i>
+
+                                                                </span>
+                                                                <input placeholder="companyName" @bind="@tenant.Name" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.Name)" class="text-danger" />
+                                                            </div>
+
+                                                            <label>Email</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="far fa-address-card "></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+                                                                <input placeholder="Address" @bind="@tenant.Email" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.Email)" class="text-danger" />
+
+                                                            </div>
+
+
+                                                            <label>Address</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="far fa-address-card "></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+                                                                <input placeholder="Address" @bind="@tenant.Address" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.Address)" class="text-danger" />
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-lg-6">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col-md-16">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h5 class="text-uppercase mb-0">Contact Info</h5>
+                                                        </div>
+                                                        <div class="list-group-item">
+                                                            <div class="form-group row">
+                                                            </div>
+
+                                                            <label>Contact</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="far fa-address-card "></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+                                                                <input placeholder="Address" @bind="@tenant.Contact" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.Contact)" class="text-danger" />
+
+                                                            </div>
+                                                            <label>Country</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="fas fa-map-pin"></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+
+                                                                <input placeholder="country" @bind="@tenant.Country" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.Country)" class="text-danger" />
+                                                            </div>
+
+                                                            <label>PanNumber</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="fas fa-map-pin"></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+
+                                                                <input placeholder="PanNumber" @bind="@tenant.PanNumber" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.PanNumber)" class="text-danger" />
+                                                            </div>
+                                                            <label>GstNumber</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="fas fa-map-pin"></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+
+                                                                <input placeholder="GstNumber" @bind="@tenant.GstNumber" class="form-control" />
+                                                                <ValidationMessage For="@(() => tenant.GstNumber)" class="text-danger" />
+                                                            </div>
+
+
+
+
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </td>
+
+                                        </tr>
+
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <div class="text-center">
+
+                                <button type="submit" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Save">Save</button>
+                                @*  <input type="button" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Cancel" />*@
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p>@Message</p>
+        </EditForm>
     </div>
+</div>
 
-    <div class="form-group row">
-        <label for="email" class="col-md-2 col-form-label">Email:</label>
-        <div class="col-md-10">
-            <InputText id="email" class="form-control" @bind-Value="tenant.Email" />
-            <ValidationMessage For="@(() => tenant.Email)" />
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Contact:</label>
-        <div class="col-md-10">
-            <InputText id="contact" class="form-control" @bind-Value="tenant.Contact" />
-            <ValidationMessage For="@(() => tenant.Contact)" />
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Address:</label>
-        <div class="col-md-10">
-            <InputText id="address" class="form-control" @bind-Value="tenant.Address" />
-            <ValidationMessage For="@(() => tenant.Address)" />
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Country:</label>
-        <div class="col-md-10">
-            <InputText id="country" class="form-control" @bind-Value="tenant.Country" />
-            <ValidationMessage For="@(() => tenant.Country)" />
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">GST Number:</label>
-        <div class="col-md-10">
-            <InputText id="gstNumber" class="form-control" @bind-Value="tenant.GstNumber" />
-            <ValidationMessage For="@(() => tenant.GstNumber)" />
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">PAN Number:</label>
-        <div class="col-md-10">
-            <InputText id="panNumber" class="form-control" @bind-Value="tenant.PanNumber" />
-            <ValidationMessage For="@(() => tenant.PanNumber)" />
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Save</button>
-        </div>
-    </div>
-</EditForm>
-
-<p>@Message</p>
 
 @code {
     [Parameter]
