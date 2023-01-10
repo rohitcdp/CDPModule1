@@ -56,13 +56,15 @@ namespace CDPModule1.Server.Controllers
                         }
                         InvoiceTemplateInfo templateInfo = new InvoiceTemplateInfo
                         {
+                            //Id=new Guid(),
                             FieldName = d.FieldName,
                             TemplateId = it.Id,
                             ParentIdentifier = d.ParentIdentifier,
                             Text = d.Text,
                             Type = d.Type,
                             XPosition = d.XPosition,
-                            YPosition = d.YPosition
+                            YPosition = d.YPosition,
+
                         };
                         await cdpContext.InvoiceTemplateInfo.AddAsync(templateInfo);
                         await cdpContext.SaveChangesAsync();

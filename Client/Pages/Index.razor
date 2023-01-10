@@ -27,22 +27,22 @@
 
      <div class="row m-1">
         <label class="col-2">Template Type:</label>
-        <select id="valueType" class="col-6">
+        <select id="valueType" class="col-6" onchange="typeChange(this)">
             <option value="1">Dynamic</option>
             <option value="2">Static</option>
         </select>
-        <input id="static_type" class="col-4" type="text" placeholder="Enter.."  />
+        <input id="static_type" class="col-4" type="text" placeholder="Enter.." style="display:none" />
     </div>
 
     <div class="row m-1">
      <label class="col-2">Filed Type: </label>
-        <select id="Field" class="col-6">
+        <select id="Field" class="col-6" onchange="fieldTypeChange(this)">
             @foreach (var f in Enum.GetValues(typeof(FieldType)))
             {
                 <option value="@f">@f</option>
             }
         </select>
-        <input id="custom_filed" class="col-4" type="text" placeholder="Enter Field Name" />
+        <input id="custom_filed" class="col-4" type="text" placeholder="Enter Field Name" style="display:none"/>
     </div>
 
     <input type="text" name="name" placeholder="select a value" id="propText" />
