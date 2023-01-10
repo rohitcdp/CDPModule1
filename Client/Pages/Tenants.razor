@@ -19,7 +19,7 @@
             <th>Contact</th>
             <th>Address</th>
             <th>Country</th>
-            <th>GST Number</th> m
+            <th>GST Number</th> 
             <th>PAN Number</th>
 
         </tr>
@@ -70,6 +70,7 @@
         if(responseModal.Message == "Success")
         {
             TenantList = await Reload();
+
         }
     }
 
@@ -78,6 +79,7 @@
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
+        //var item = result.Content.ReadAsStringAsync();
         return await result.Content.ReadFromJsonAsync<List<Tenant>>(); 
     }
 }
