@@ -1,0 +1,130 @@
+﻿@page "/Resetpasswoord"
+@using CDPModule1.Client.Services;
+@using CDPModule1.Shared;
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+@inject NavigationManager NavManager
+<div class="row">
+    <div class="col-md-12">
+@*        <EditForm Model="@" OnValidSubmit="@Save" style="background-color:rgb(134,188,37)" class="card card-body bg-light mt-5">
+            <DataAnnotationsValidator />*@
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="general-info">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col-md-16">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h5 class="text-uppercase mb-0">Reset Passwort</h5>
+                                                        </div>
+                                                        <div class="list-group-item">
+                                                            <div class="form-group row">
+                                                            </div>
+
+                                                        <label> Resend Password</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="	fas fa-portrait"></i>
+
+                                                                </span>
+                                                            <input placeholder="Resend Password" @bind="@Resendpassword" class="form-control" />
+                                                                
+                                                            </div>
+
+                                                        <label>Reset Password</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="far fa-address-card "></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+                                                            <input placeholder="Reset Password" @bind="@Resetpassword" class="form-control" />
+                                                                
+
+                                                            </div>
+
+
+                                                        <label>Confirm Password</label>
+                                                            <div class="input-group">
+
+                                                                <span class="input-group-text">
+                                                                    <i class="far fa-address-card "></i>
+                                                                    <span class="bi-person"></span>
+                                                                </span>
+                                                            <input placeholder="Confirm Password" @bind="@Confirmpassword" class="form-control" />
+                                                           
+
+                                                            </div>
+                                                        <p style="color:red">@loginmessage</p>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                          
+                            <div class="text-center">
+
+                            <button type="submit" @onclick="submit" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Save">Save</button>
+                                @*  <input type="button" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Cancel" />*@
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+       @* </EditForm>*@
+    </div>
+</div>
+
+
+
+
+
+
+
+@code {
+    public string? Resendpassword { get; set; }
+    public string? Resetpassword { get; set; }
+    public string? Confirmpassword { get; set; }
+    public string? loginmessage { get; set; }
+    [Parameter]
+    public List<User> UserList { get; set; }
+
+    public string token = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        token = await localStorageService.GetItem<string>("token");
+        UserList = await Reload();
+    }
+
+    public async Task<List<User>> Reload()
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/Account/GetAllUsers");
+        return await result.Content.ReadFromJsonAsync<List<User>>();
+    }
+    public async Task submit()
+    {
+        if (Resetpassword != Confirmpassword)
+        {
+            loginmessage = " password does not match";
+        }
+       // var result = await httpClient.PostAsJsonAsync("api/Account/GetAllUsers",);
+
+
+    }
+}

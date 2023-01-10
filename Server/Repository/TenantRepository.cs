@@ -15,7 +15,8 @@ namespace CDPModule1.Server.Repository
 
         public async Task<List<Tenant>> GetAllTenants()
         {
-            return await dbContext.Tenants.ToListAsync();
+            var t= await dbContext.Tenants.ToListAsync();
+            return t;
         }
 
         public async Task<Tenant> GetById(Guid Id)
