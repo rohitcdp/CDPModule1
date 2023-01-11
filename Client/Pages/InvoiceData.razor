@@ -1,0 +1,103 @@
+﻿@page "/invoices"
+
+
+@using CDPModule1.Client.Services;
+@using CDPModule1.Shared;
+@inject HttpClient httpClient
+@inject ILocalStorageService localStorageService;
+@inject NavigationManager NavManager
+
+
+<h3>Invoices</h3>
+<select id="templateValue" class="col-6" @bind="TemplateId" >
+    <option value="1">METRONATION CHENNAI TELEVISION</option>
+    <option value="2">TV18 Broadcast Limited</option>
+</select>
+<button class="btn btn-primary" @onclick="@GetInvoiceData">Apply</button>
+@if (InvoiceList != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Channel</th>
+                <th>Program</th>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Caption</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in InvoiceList)
+            {
+                <tr>
+
+                    <td>@invoice.Channel</td>
+                    <td>@invoice.Program</td>
+                    <td>@invoice.Date</td>
+                    <td>@invoice.Day</td>
+                    <td>@invoice.Caption</td>
+                    @*<td>
+            <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
+            <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
+            </td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Loading.........</p>
+}
+@code {
+
+    public int TemplateId { get; set; }
+
+    [Parameter]
+    public List<AgencyInvoiceData> InvoiceList { get; set; }
+
+    public string token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await localStorageService.GetItem<string>("token");
+        InvoiceList = await Reload();
+    }
+
+    public async Task GetInvoiceData()
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/File/GetAllAgencyInvoiceByTemplate?templateId=" + TemplateId);
+        var item = result.Content.ReadAsStringAsync();
+        InvoiceList= await result.Content.ReadFromJsonAsync<List<AgencyInvoiceData>>();
+    }
+
+    // public void CreateNew() => NavManager.NavigateTo("/add_tenant/", true);
+
+    // public void OpenEdit(Guid Id) => NavManager.NavigateTo("/add_tenant/" + Id, true);
+
+    //public async Task Delete(Guid Id)
+    //{
+    //    httpClient.DefaultRequestHeaders.Clear();
+    //    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+    //    var selectedTenant = InvoiceList.Where(x => x.Id == Id).FirstOrDefault();
+    //    var result = await httpClient.PostAsJsonAsync("api/Tenant/DeleteTenant", selectedTenant);
+    //    ResponseModal? responseModal = await result.Content.ReadFromJsonAsync<ResponseModal>();
+    //    if (responseModal.Message == "Success")
+    //    {
+    //        TenantList = await Reload();
+
+    //    }
+    //}
+
+    public async Task<List<AgencyInvoiceData>> Reload()
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        var result = await httpClient.GetAsync("api/File/GetAllAgencyInvoice");
+        var item = result.Content.ReadAsStringAsync();
+        return await result.Content.ReadFromJsonAsync<List<AgencyInvoiceData>>();
+    }
+}

@@ -1,4 +1,6 @@
-﻿namespace CDPModule1.Shared
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CDPModule1.Shared
 {
     public class AgencyInvoiceData : BaseEntity
     {
@@ -13,9 +15,15 @@
         public int? NetRate { get; set; }
         public int? Dur { get; set; }
         public int? NetCost { get; set; }
-        public int? GrossRate   { get; set; }
+        public int? GrossRate { get; set; }
         public string? Daypart { get; set; }
-        public string? PlanDetails  { get; set; }
+        public string? PlanDetails { get; set; }
         public string? Comments { get; set; }
+        public Guid? TemplateId { get; set; }
+        public double Amount { get; set; }
+        //[ForeignKey("Id")]
+        //public InvoiceTemplate? InvoiceTemplate { get; set; }
+
+        //public Guid? AgencyBillingId { get; set; }
     }
 }

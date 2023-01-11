@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CDPModule1.Server.Migrations
 {
     [DbContext(typeof(CDPDbContext))]
-    [Migration("20230109113430_first")]
-    partial class first
+    [Migration("20230111213629_amt")]
+    partial class amt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,6 +147,9 @@ namespace CDPModule1.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<string>("Caption")
                         .HasColumnType("nvarchar(max)");
 
@@ -188,6 +191,9 @@ namespace CDPModule1.Server.Migrations
 
                     b.Property<string>("Program")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -360,6 +366,7 @@ namespace CDPModule1.Server.Migrations
             modelBuilder.Entity("CDPModule1.Shared.InvoiceTemplateInfo", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FieldName")
@@ -468,7 +475,6 @@ namespace CDPModule1.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
@@ -484,18 +490,15 @@ namespace CDPModule1.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -542,17 +545,6 @@ namespace CDPModule1.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
-                });
-
-            modelBuilder.Entity("CDPModule1.Shared.InvoiceTemplateInfo", b =>
-                {
-                    b.HasOne("CDPModule1.Shared.InvoiceTemplate", "InvoiceTemplate")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("InvoiceTemplate");
                 });
 
             modelBuilder.Entity("CDPModule1.Shared.User", b =>

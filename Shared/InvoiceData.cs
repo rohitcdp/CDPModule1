@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CDPModule1.Shared
 {
 
-    public  class InvoiceData: BaseEntity
+    public class InvoiceData : BaseEntity
     {
         public int SerialNumber { get; set; }
         public string Caption { get; set; }
-        public string SpotType { get; set; } 
+        public string SpotType { get; set; }
         public string Category { get; set; }
         public DateTime TelecastDate { get; set; }
         public string Ist { get; set; }
@@ -25,12 +20,12 @@ namespace CDPModule1.Shared
 
         [ForeignKey("InvoiceId")]
         public Invoice? Invoice { get; set; }
-/*
-        public Guid UserId { get; set; }
-        [ForeignKey("UserId")]
-        public User? User { get; set; }
-        public Guid TenantId { get; set; }
-        [ForeignKey("TenantId")]
-        public Tenant? Tenant { get; set; }*/
+        /*
+                public Guid UserId { get; set; }
+                [ForeignKey("UserId")]
+                public User? User { get; set; }
+                public Guid TenantId { get; set; }
+                [ForeignKey("TenantId")]
+                public Tenant? Tenant { get; set; }*/
     }
 }

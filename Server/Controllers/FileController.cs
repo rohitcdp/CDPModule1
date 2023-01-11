@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Linq;
 //using Spire.Xls;
 
 namespace CDPModule1.Server.Controllers
@@ -44,7 +45,7 @@ namespace CDPModule1.Server.Controllers
                 {
                     foreach (var d in di)
                     {
-                        InvoiceTemplate it = await  cdpContext.InvoiceTemplate.FirstOrDefaultAsync(x=>x.TemplateName==d.TemplateName);
+                        InvoiceTemplate it = await cdpContext.InvoiceTemplate.FirstOrDefaultAsync(x => x.TemplateName == d.TemplateName);
                         if (it == null)
                         {
                             it = new InvoiceTemplate
@@ -73,7 +74,8 @@ namespace CDPModule1.Server.Controllers
                     }
                 }
                 return di;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -82,14 +84,21 @@ namespace CDPModule1.Server.Controllers
         [HttpPost]
         [Route("SaveFile")]
         [AllowAnonymous]
-        public async Task<ResponseModal> SaveFile([FromBody] List<AgencyInvoiceData> dataList)
+        public async Task SaveFile([FromBody] List<AgencyInvoiceData> dataList)
         {
-           if(dataList.Count > 0)
+            if (dataList.Count > 0)
             {
-                await cdpContext.AgencyInvoiceData.AddRangeAsync(dataList);
-                await cdpContext.SaveChangesAsync();
+                try
+                {
+                    await cdpContext.AgencyInvoiceData.AddRangeAsync(dataList);
+                    await cdpContext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
             }
-            return new ResponseModal { Data = null, Message = StatusConstant.SUCCESS, StatusCode = 200 };
         }
 
         [HttpPost]
@@ -102,7 +111,7 @@ namespace CDPModule1.Server.Controllers
 
 
                 byte[] file = Convert.FromBase64String(fileContent.base64Content);
-                
+
 
                 //reading pdf
                 var doc = new GcPdfDocument();
@@ -112,9 +121,9 @@ namespace CDPModule1.Server.Controllers
                 {
                     X = 0,
                     Y = 0,
-                    Height=doc.PageSize.Height,
-                    Width=doc.PageSize.Width
-                    
+                    Height = doc.PageSize.Height,
+                    Width = doc.PageSize.Width
+
                 };
 
 
@@ -232,7 +241,32 @@ namespace CDPModule1.Server.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetAllAgencyInvoice")]
+        [Authorize]
+        public async Task<List<AgencyInvoiceData>> GetAllAgencyData()
+        {
+            return await cdpContext.AgencyInvoiceData.ToListAsync();
+        }
 
+        [HttpGet]
+        [Route("GetAllAgencyInvoiceByTemplate")]
+        [Authorize]
+        public async Task<List<AgencyInvoiceData>> GetAllAgencyInvoiceByTemplate(int templateId)
+        {
+            if (templateId == 1)
+            {
+
+                var xz = new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181353");
+                return await cdpContext.AgencyInvoiceData.Where(x => x.TemplateId == xz).ToListAsync();
+            }
+            else
+            {
+                var xz = new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181354");
+                return await cdpContext.AgencyInvoiceData.Where(x => x.TemplateId == xz).ToListAsync();
+
+            }
+        }
 
         //private async Task<string> ExportPDFToExcel(string fileName, string path)
         //{
@@ -285,34 +319,34 @@ namespace CDPModule1.Server.Controllers
         }
     }
 }
-    
-    //[HttpPost]
-        //[System.Web.Http.Route("upload")]
-        //public ResponseModal UploadFile([FromBody] IFormFile formFile)
-        //{
-        //    try
-        //    {
-        //        StringBuilder text = new StringBuilder();
-        //        string path = Path.Combine("C:\\Users\\Administrator\\Documents\\CDP", formFile.FileName);
-        //        PdfReader pdfReader = new PdfReader(path);
-        //        PdfDocument pdfDocument = new PdfDocument(pdfReader);
-        //        for (int index = 1; index <= pdfDocument.GetNumberOfPages(); index++)
-        //        {
-        //            ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
-        //            var page = pdfDocument.GetPage(index);
-        //            string currentText = PdfTextExtractor.GetTextFromPage(page, strategy);
-        //            currentText = Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.UTF8.GetBytes(currentText)));
-        //            text.Append(currentText);
-        //        }
-        //        pdfReader.Close();
 
-        //        return new ResponseModal();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-        //}
-        //}
+//[HttpPost]
+//[System.Web.Http.Route("upload")]
+//public ResponseModal UploadFile([FromBody] IFormFile formFile)
+//{
+//    try
+//    {
+//        StringBuilder text = new StringBuilder();
+//        string path = Path.Combine("C:\\Users\\Administrator\\Documents\\CDP", formFile.FileName);
+//        PdfReader pdfReader = new PdfReader(path);
+//        PdfDocument pdfDocument = new PdfDocument(pdfReader);
+//        for (int index = 1; index <= pdfDocument.GetNumberOfPages(); index++)
+//        {
+//            ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
+//            var page = pdfDocument.GetPage(index);
+//            string currentText = PdfTextExtractor.GetTextFromPage(page, strategy);
+//            currentText = Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.UTF8.GetBytes(currentText)));
+//            text.Append(currentText);
+//        }
+//        pdfReader.Close();
+
+//        return new ResponseModal();
+//    }
+//    catch (Exception ex)
+//    {
+//        throw ex;
+//    }
+//}
+//}
+//}
 

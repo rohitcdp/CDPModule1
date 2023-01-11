@@ -4,6 +4,7 @@ using CDPModule1.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CDPModule1.Server.Migrations
 {
     [DbContext(typeof(CDPDbContext))]
-    partial class CDPDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230111193225_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,11 +144,7 @@ namespace CDPModule1.Server.Migrations
             modelBuilder.Entity("CDPModule1.Shared.AgencyInvoiceData", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
 
                     b.Property<string>("Caption")
                         .HasColumnType("nvarchar(max)");
@@ -506,6 +505,17 @@ namespace CDPModule1.Server.Migrations
                 });
 
             modelBuilder.Entity("CDPModule1.Shared.AgencyBilling", b =>
+                {
+                    b.HasOne("CDPModule1.Shared.InvoiceTemplate", "InvoiceTemplate")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InvoiceTemplate");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.AgencyInvoiceData", b =>
                 {
                     b.HasOne("CDPModule1.Shared.InvoiceTemplate", "InvoiceTemplate")
                         .WithMany()

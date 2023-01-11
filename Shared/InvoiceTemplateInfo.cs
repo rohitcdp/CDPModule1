@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace CDPModule1.Shared
+﻿namespace CDPModule1.Shared
 {
     public class InvoiceTemplateInfo : BaseEntity
     {
