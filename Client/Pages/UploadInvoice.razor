@@ -13,6 +13,7 @@
 @using static CDPModule1.Client.Services.EnumService;
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
+@inject IApiService ApiService;
 
 <h1>Upload File </h1>
 <div class="row m-1">
@@ -20,13 +21,48 @@
     <InputFile OnChange="@uploadPdfNew" id="FileUpload1" class="col-9" />
 </div>
 
-<button type="button" onclick="insertData()" class="btn btn-success m-1">Save</button>
+<button type="button" @onclick="() =>insertData()" class="btn btn-success m-1">Save</button>
 
 
 
 @code {
 
+    public List<List<string>> Data { get; set; }
 
+    public async void insertData()
+    {
+        try
+        {
+            List<AgencyInvoiceData> lstAgd = new List<AgencyInvoiceData>();
+            if (Data.Count > 0)
+            {
+                foreach (List<string> list in Data)
+                {
+                    string[] a = list.ToArray();
+                    if (list.Count < 8)
+                    {
+                        AgencyInvoiceData agd = new AgencyInvoiceData
+                            {
+                                Program = a[0].ToString(),
+                                Channel = a[6].ToString(),
+                                Day = a[3].ToString(),
+                                //Time = new TimeSpan(int.Parse(a[4].Split(":")[0]), int.Parse(a[4].Split(":")[1]), int.Parse(a[4].Split(":")[2])),
+                                //NetRate = Int32.Parse(a[5]),
+                                Date = a[2].ToString()
+
+                            };
+
+                        lstAgd.Add(agd);
+                    }
+                }
+                HttpResponseMessage result = await ApiService.PostWithAuthAsync("api/File/SaveFile", lstAgd);
+                ResponseModal? response = await result.Content.ReadFromJsonAsync<ResponseModal>();
+            }
+        }catch(Exception e)
+        {
+            throw e;
+        }
+    }
 
     public async Task uploadPdfNew(InputFileChangeEventArgs inputFileChangeEvent)
     {
@@ -52,10 +88,10 @@
                     newFileName = Path.GetRandomFileName().Split('.')[0]
 
                 };
-            var res = await httpClient.PostAsJsonAsync("api/File/uploadPdf", content);
+            HttpResponseMessage result = await httpClient.PostAsJsonAsync("api/File/uploadPdf", content);
+            DataResponseModal? responseModal = await result.Content.ReadFromJsonAsync<DataResponseModal>();
 
-            var x = res;
-
+            Data = responseModal.Data;
 
         }
         catch (Exception ex)

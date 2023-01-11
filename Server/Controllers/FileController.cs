@@ -79,10 +79,22 @@ namespace CDPModule1.Server.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("SaveFile")]
+        [AllowAnonymous]
+        public async Task<ResponseModal> SaveFile([FromBody] List<AgencyInvoiceData> dataList)
+        {
+           if(dataList.Count > 0)
+            {
+                await cdpContext.AgencyInvoiceData.AddRangeAsync(dataList);
+                await cdpContext.SaveChangesAsync();
+            }
+            return new ResponseModal { Data = null, Message = StatusConstant.SUCCESS, StatusCode = 200 };
+        }
 
         [HttpPost]
         [Route("uploadPdf")]
-        public async Task<List<List<string>>> uploadPdf(FileResultContent fileContent)
+        public async Task<DataResponseModal> uploadPdf(FileResultContent fileContent)
         {
             try
             {
@@ -137,8 +149,12 @@ namespace CDPModule1.Server.Controllers
                 }
 
 
-
-                return data;
+                return new DataResponseModal
+                {
+                    Data = data,
+                    Message = "Success",
+                    StatusCode = 200
+                };
 
             }
             catch (Exception ex)
@@ -299,3 +315,4 @@ namespace CDPModule1.Server.Controllers
         //}
         //}
         //}
+
