@@ -1,13 +1,14 @@
 ﻿@page "/Resetpasswoord"
 @using CDPModule1.Client.Services;
 @using CDPModule1.Shared;
+@using CDPModule1.Shared.ViewModel;
 @inject HttpClient httpClient
 @inject ILocalStorageService localStorageService;
 @inject NavigationManager NavManager
 <div class="row">
     <div class="col-md-12">
-@*        <EditForm Model="@" OnValidSubmit="@Save" style="background-color:rgb(134,188,37)" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />*@
+        <EditForm Model="@resetpasswordmodel" OnValidSubmit="@submit" style="background-color:rgb(134,188,37)" class="card card-body bg-light mt-5">
+            <DataAnnotationsValidator/>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="general-info">
@@ -33,7 +34,7 @@
                                                                     <i class="	fas fa-portrait"></i>
 
                                                                 </span>
-                                                            <input placeholder="Resend Password" @bind="@Resendpassword" class="form-control" />
+                                                            <input placeholder="Resend Password" @bind="@resetpasswordmodel.ResendPassword" class="form-control" />
                                                                 
                                                             </div>
 
@@ -44,7 +45,7 @@
                                                                     <i class="far fa-address-card "></i>
                                                                     <span class="bi-person"></span>
                                                                 </span>
-                                                            <input placeholder="Reset Password" @bind="@Resetpassword" class="form-control" />
+                                                            <input placeholder="Reset Password" @bind="@resetpasswordmodel.ResetPassword" class="form-control" />
                                                                 
 
                                                             </div>
@@ -57,7 +58,7 @@
                                                                     <i class="far fa-address-card "></i>
                                                                     <span class="bi-person"></span>
                                                                 </span>
-                                                            <input placeholder="Confirm Password" @bind="@Confirmpassword" class="form-control" />
+                                                            <input placeholder="Confirm Password" @bind="@resetpasswordmodel.ConfirmPassword" class="form-control" />
                                                            
 
                                                             </div>
@@ -76,7 +77,7 @@
                             <div class="text-center">
 
                             <button type="submit" @onclick="submit" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Save">Save</button>
-                                @*  <input type="button" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Cancel" />*@
+                             @*<input type="button" style="background-color:rgb(134,188,37);color:white;" class="btn btn-primary" value="Cancel" />*@
 
 
                             </div>
@@ -85,7 +86,7 @@
                 </div>
             </div>
             
-       @* </EditForm>*@
+    </EditForm>
     </div>
 </div>
 
@@ -96,13 +97,11 @@
 
 
 @code {
-    public string? Resendpassword { get; set; }
-    public string? Resetpassword { get; set; }
-    public string? Confirmpassword { get; set; }
-    public string? loginmessage { get; set; }
+    resetpasswordmodel resetpasswordmodel = new resetpasswordmodel();
     [Parameter]
     public List<User> UserList { get; set; }
-
+    [Parameter]
+    public string loginmessage{ get; set; }
     public string token = string.Empty;
     protected override async Task OnInitializedAsync()
     {
@@ -119,11 +118,11 @@
     }
     public async Task submit()
     {
-        if (Resetpassword != Confirmpassword)
+        if (resetpasswordmodel.ResendPassword != resetpasswordmodel.ConfirmPassword)
         {
             loginmessage = " password does not match";
         }
-       // var result = await httpClient.PostAsJsonAsync("api/Account/GetAllUsers",);
+        var result = await httpClient.PostAsJsonAsync("api/Account/resetpassword",resetpasswordmodel);
 
 
     }

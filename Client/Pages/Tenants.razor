@@ -10,40 +10,47 @@
 <h3>Tenants</h3>
 
 <button onclick="@CreateNew" class="btn btn-success">Create New Tenant</button>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Action</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Contact</th>
-            <th>Address</th>
-            <th>Country</th>
-            <th>GST Number</th> 
-            <th>PAN Number</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in TenantList)
-        {
+@if (TenantList != null)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
-                    <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
-                </td>
-                <td>@user.Name</td>
-                <td>@user.Email</td>
-                <td>@user.Contact</td>
-                <td>@user.Address</td>
-                <td>@user.Country</td>
-                <td>@user.GstNumber</td>
-                <td>@user.PanNumber</td>
+                
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Country</th>
+                <th>GST Number</th> 
+                <th>PAN Number</th>
+                <th>Action</th>
             </tr>
-        }
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            @foreach (var user in TenantList)
+            {
+                <tr>
+                   
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>@user.Contact</td>
+                    <td>@user.Address</td>
+                    <td>@user.Country</td>
+                    <td>@user.GstNumber</td>
+                    <td>@user.PanNumber</td>
+                    <td>
+                        <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
+                        <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Loading.........</p>
+}
 @code {
     [Parameter]
     public List<Tenant> TenantList { get; set; }
@@ -79,7 +86,7 @@
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/Tenant/GetAllTenants");
-        //var item = result.Content.ReadAsStringAsync();
+        var item = result.Content.ReadAsStringAsync();
         return await result.Content.ReadFromJsonAsync<List<Tenant>>(); 
     }
 }

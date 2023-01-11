@@ -1,9 +1,13 @@
-﻿using CDPModule1.Server.IServices;
+﻿using CDPModule1.Client.Pages;
+using CDPModule1.Server.IServices;
+using CDPModule1.Server.Services;
 using CDPModule1.Server.Utils;
 using CDPModule1.Shared;
 using CDPModule1.Shared.RequestModel;
+using CDPModule1.Shared.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CDPModule1.Server.Controllers
 {
@@ -11,6 +15,7 @@ namespace CDPModule1.Server.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly CDPDbContext _dbcontext;
         private readonly IAccountService _accountService;
         public AccountController(IAccountService accountService)
         {
@@ -103,6 +108,34 @@ namespace CDPModule1.Server.Controllers
         [Route("GetTenantUsers")]
         [Authorize]
         public ResponseModal GetTenantUsers(Guid tenantId) => _accountService.GetTenantUsers(tenantId).Result;
+
+
+        [HttpPost]
+        [Route("resetpassword")]
+        public async Task<bool>UpdateReserpassword(resetpasswordmodel resetmodel )
+        {
+            var users = _dbcontext.Users.Where(X => X.Id == resetmodel.id).FirstOrDefault();
+
+            if (users != null)
+            {
+                User user = new User
+                {
+
+                    Password = resetmodel.ResetPassword,
+
+                };
+
+
+                _dbcontext.Users.Update(users);
+                return save();
+            }
+               return true;
+        }
+        public bool save()
+        {
+            var saved = _dbcontext.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
     }
 }

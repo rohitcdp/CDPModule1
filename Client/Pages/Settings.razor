@@ -19,60 +19,67 @@
 <PageTitle>Settings</PageTitle>
 <h1>Settings</h1>
 
-<EditForm Model="@user" OnValidSubmit="@Update" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />
+@if (user != null)
+{
 
-    <div class="form-group row">
-        <label for="confirm" class="col-md-2 col-form-label">Name:</label>
-        <div class="col-md-10">
-            <InputText id="name" class="form-control" @bind-Value="user.Name" />
-            <ValidationMessage For="@(() => user.Name)" />
+    <EditForm Model="@user" OnValidSubmit="@Update" class="card card-body bg-light mt-5">
+        <DataAnnotationsValidator />
+
+        <div class="form-group row">
+            <label for="confirm" class="col-md-2 col-form-label">Name:</label>
+            <div class="col-md-10">
+                <input id="name" class="form-control" @bind="user.Name" />
+                <ValidationMessage For="@(() => user.Name)" />
+            </div>
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="email" class="col-md-2 col-form-label">Email:</label>
-        <div class="col-md-10">
-            <InputText type="email" id="email" class="form-control" @bind-Value="user.Email" />
-            <ValidationMessage For="@(() => user.Email)" />
+        <div class="form-group row">
+            <label for="email" class="col-md-2 col-form-label">Email:</label>
+            <div class="col-md-10">
+                <input type="email" id="email" class="form-control" @bind="user.Email" />
+                <ValidationMessage For="@(() => user.Email)" />
+            </div>
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="password" class="col-md-2 col-form-label">Password:</label>
-        <div class="col-md-10">
-            <InputText type="password" id="password" class="form-control" @bind-Value="user.Password" />
-            <ValidationMessage For="@(() => user.Password)" />
+        <div class="form-group row">
+            <label for="password" class="col-md-2 col-form-label">Password:</label>
+            <div class="col-md-10">
+                <input type="password" id="password" class="form-control" @bind="user.Password" />
+                <ValidationMessage For="@(() => user.Password)" />
+            </div>
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="address" class="col-md-2 col-form-label">Address:</label>
-        <div class="col-md-10">
-            <InputText id="address" class="form-control" @bind-Value="user.Address" />
-            <ValidationMessage For="@(() => user.Address)" />
+        <div class="form-group row">
+            <label for="address" class="col-md-2 col-form-label">Address:</label>
+            <div class="col-md-10">
+                <input id="address" class="form-control" @bind="user.Address" />
+                <ValidationMessage For="@(() => user.Address)" />
+            </div>
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="dob" class="col-md-2 col-form-label">DOB:</label>
-        <div class="col-md-10">
-            <InputDate id="dob" class="form-control" @bind-Value="user.DOB" />
-            <ValidationMessage For="@(() => user.DOB)" />
+        <div class="form-group row">
+            <label for="dob" class="col-md-2 col-form-label">DOB:</label>
+            <div class="col-md-10">
+                <input type="date"  class="form-control" @bind="user.DOB" />
+                <ValidationMessage For="@(() => user.DOB)" />
+            </div>
         </div>
-    </div>
 
-    <div class="form-group row">
-        <label for="dob" class="col-md-2 col-form-label">Gender</label>
-        <div class="col-md-10">
-            <InputRadioGroup @bind-Value="user.Gender">
-                <InputRadio Value="@("Female")" /> @("Female")
-                <InputRadio Value="@("Male")" /> @("Male")
-            </InputRadioGroup>
+        <div class="form-group row">
+            <label for="dob" class="col-md-2 col-form-label">Gender</label>
+            <div class="col-md-10">
+                <InputRadioGroup @bind-Value="user.Gender">
+                    <InputRadio Value="@("Female")" /> @(
+                "Female"
+                )
+                    <InputRadio Value="@("Male")" /> @(
+                "Male"
+                )
+                </InputRadioGroup>
+            </div>
         </div>
-    </div>
 
-  @*    <div class="form-group row">
+        @*    <div class="form-group row">
     <label for="emailVerified" class="col-md-2 col-form-label">Is Email Verfified ?</label>
     <div class="col-md-10">
      <InputCheckbox  id="emailVerified" class="form-control" @bind-Value="user.IsEmailVerified"  />
@@ -80,13 +87,17 @@
     </div>
     </div>   *@
 
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Update</button>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-success">Update</button>
+            </div>
         </div>
-    </div>
-</EditForm>
-
+    </EditForm>
+}
+else
+{
+    <p>Loading....</p>
+}
 
 @code{
 

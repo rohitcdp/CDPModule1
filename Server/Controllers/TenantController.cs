@@ -19,15 +19,15 @@ namespace CDPModule1.Server.Controllers
 
         [HttpGet]
         [Route("GetAllTenants")]
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         public  List<Tenant> GetAllTenants()
         {
-            return  _tenantService.GetAllTenants().Result;
+            return _tenantService.GetAllTenants().Result;
         }
 
         [HttpGet]
         [Route("GetTenantById")]
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         public Tenant GetTenantById(Guid Id)
         {
             return _tenantService.GetById(Id).Result;
@@ -35,7 +35,7 @@ namespace CDPModule1.Server.Controllers
 
         [HttpPost]
         [Route("UpdateTenant")]
-        [Authorize(Roles = Roles.Admin)]
+       // [Authorize(Roles = Roles.Admin)]
         public async Task<ResponseModal> UpdateTenant(Tenant tenant)
         {
             return await _tenantService.UpdateTenant(tenant);
@@ -43,7 +43,7 @@ namespace CDPModule1.Server.Controllers
 
         [HttpPost]
         [Route("DeleteTenant")]
-        [Authorize(Roles = Roles.Admin)]
+       // [Authorize(Roles = Roles.Admin)]
         public async Task<ResponseModal> DeleteTenant(Tenant tenant)
         {
             return await _tenantService.DeleteTenant(tenant);

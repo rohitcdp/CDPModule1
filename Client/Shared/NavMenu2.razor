@@ -1,0 +1,94 @@
+﻿@using CDPModule1.Client.Services
+@using System.IdentityModel.Tokens.Jwt;
+@inject ILocalStorageService localStorageService;
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <div class="col-lg-2 md-xl-4">
+            <img src="Images\D1.png" width=120px; />
+        </div>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="dashboard">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Dashboard1
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3" id="nav_home">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Upload Invoice1
+            </NavLink>
+        </div>
+    
+      @*  @if (role == "admin")
+        {
+            <div class="nav-item px-3" id="nav_addTenant">
+                <NavLink class="nav-link" href="add_tenant">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Add Tenant
+                </NavLink>
+            </div>
+        }
+        <div class="nav-item px-3" id="nav_addUser">
+            <NavLink class="nav-link" href="add_user">
+                <span class="oi oi-plus" aria-hidden="true"></span> Add User
+            </NavLink>
+        </div>*@
+
+        <div class="nav-item px-3" id="users">
+            <NavLink class="nav-link" href="users">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Users
+            </NavLink>
+        </div>
+
+
+        <div class="nav-item px-3" id="tenants">
+            <NavLink class="nav-link" href="tenants">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Tenants
+            </NavLink>
+        </div>
+
+
+        <div class="nav-item px-3" id="settings">
+            <NavLink class="nav-link" href="settings">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Settings
+            </NavLink>
+        </div>
+
+    </nav>
+</div>
+
+@code {
+
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private string? token = null;
+
+    private string? role = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var handler = new JwtSecurityTokenHandler();
+        string? token = await localStorageService.GetItem<string>("token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            if (jwtSecurityToken != null)
+                role = jwtSecurityToken.Claims.Where(x => x.Type == "role").FirstOrDefault().Value;
+        }
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

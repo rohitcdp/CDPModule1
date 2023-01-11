@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+@using CDPModule1.Client.Services
+@inject ILocalStorageService localStorageService;
+@inject NavigationManager NavManager
+
+<div class="page">     
+    <div class="sidebar">
+        <NavMenu2 />
+     </div>
+
+    <main>
+        <div class="top-row px-4">
+            <button type="submit" class="btn btn-success" style="background-color:rgb(134,188,37)" @onclick="logout">Logout</button>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+    string token = string.Empty; 
+   
+    public async Task logout()
+    {
+        await localStorageService.RemoveItem("token");
+        token = string.Empty;
+        NavManager.NavigateTo("/", true);
+    }
+}
