@@ -26,9 +26,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="text/javascript">
-        if ($("#valueType").val() == "2") {
-            $("static_type").css("display", "block")
-        }
 
         //Data
         var data = [{
@@ -225,9 +222,6 @@
         }
 
         function insertData() {
-
-
-
             console.log('==> insertdata==>', data);
 
             $.ajax({
@@ -241,8 +235,23 @@
                     console.log(error);
                 }
             });
-
         }
+
+        function typeChange(obj) {
+            if (obj.value === "2") {
+                document.getElementById("#static_type").style.display = "block";
+
+                //$("static_type").css("display", "block",)
+            }
+        }
+
+        function fieldTypeChange(obj) {
+            if (obj.value === "Custom") {
+                document.getElementById("#Field").style.display = "block";
+                //$("Field").css("display", "!important")
+            }
+        }
+
 
 
     </script>

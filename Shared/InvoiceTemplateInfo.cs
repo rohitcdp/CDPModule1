@@ -12,8 +12,8 @@ namespace CDPModule1.Shared
         public int Type { get; set; }
 
         public Guid TemplateId { get; set; }
-        [ForeignKey("Id")]
-        public InvoiceTemplate? InvoiceTemplate { get; set; }
+        //[ForeignKey("Id")]
+        //public InvoiceTemplate? InvoiceTemplate { get; set; }
 
     }
 }

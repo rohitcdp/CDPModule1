@@ -15,6 +15,8 @@ using iText.Html2pdf.Attach.Impl.Layout;
 using System.Xml;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 //using Spire.Xls;
 
 namespace CDPModule1.Server.Controllers
@@ -56,13 +58,15 @@ namespace CDPModule1.Server.Controllers
                         }
                         InvoiceTemplateInfo templateInfo = new InvoiceTemplateInfo
                         {
+                            //Id=new Guid(),
                             FieldName = d.FieldName,
                             TemplateId = it.Id,
                             ParentIdentifier = d.ParentIdentifier,
                             Text = d.Text,
                             Type = d.Type,
                             XPosition = d.XPosition,
-                            YPosition = d.YPosition
+                            YPosition = d.YPosition,
+
                         };
                         await cdpContext.InvoiceTemplateInfo.AddAsync(templateInfo);
                         await cdpContext.SaveChangesAsync();
@@ -76,14 +80,98 @@ namespace CDPModule1.Server.Controllers
         }
 
         [HttpPost]
+        [Route("SaveFile")]
+        [AllowAnonymous]
+        public async Task<ResponseModal> SaveFile([FromBody] List<AgencyInvoiceData> dataList)
+        {
+           if(dataList.Count > 0)
+            {
+                await cdpContext.AgencyInvoiceData.AddRangeAsync(dataList);
+                await cdpContext.SaveChangesAsync();
+            }
+            return new ResponseModal { Data = null, Message = StatusConstant.SUCCESS, StatusCode = 200 };
+        }
+
+        [HttpPost]
         [Route("uploadPdf")]
-        public async Task<string> uploadPdf(FileResultContent fileContent)
+        public async Task<DataResponseModal> uploadPdf(FileResultContent fileContent)
         {
             try
             {
                 List<UploadResult> uploadResults = new List<UploadResult>();
 
-             
+
+                byte[] file = Convert.FromBase64String(fileContent.base64Content);
+                
+
+                //reading pdf
+                var doc = new GcPdfDocument();
+                doc.Load(new MemoryStream(file));
+                //doc.Pages[0].GetTextMap
+                var rect = new System.Drawing.RectangleF
+                {
+                    X = 0,
+                    Y = 0,
+                    Height=doc.PageSize.Height,
+                    Width=doc.PageSize.Width
+                    
+                };
+
+
+                var sample = doc.Pages[0].GetTable(rect);
+                DataTable dtx = new DataTable();
+
+
+                var data = new List<List<string>>();
+
+                for (int i = 0; i < doc.Pages.Count; ++i)
+                {
+                    var itable = doc.Pages[i].GetTable(rect);
+                    if (itable != null)
+                    {
+                        for (int row = 0; row < itable.Rows.Count; ++row)
+                        {
+                            if (row > 0)
+                                data.Add(new List<string>());
+                            for (int col = 0; col < itable.Cols.Count; ++col)
+                            {
+                                var cell = itable.GetCell(row, col);
+                                if (cell == null && row > 0)
+                                    data.Last().Add("");
+                                else
+                                {
+                                    if (cell != null && row > 0)
+                                        data.Last().Add($"\"{cell.Text}\"");
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                return new DataResponseModal
+                {
+                    Data = data,
+                    Message = "Success",
+                    StatusCode = 200
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        [HttpPost]
+        [Route("uploadPdfOLD")]
+        public async Task<string> uploadPdfOLD(FileResultContent fileContent)
+        {
+            try
+            {
+                List<UploadResult> uploadResults = new List<UploadResult>();
+
+
                 byte[] file = Convert.FromBase64String(fileContent.base64Content);
                 string ext = fileContent.fileExt;
                 var uploadResult = new UploadResult();
@@ -111,7 +199,7 @@ namespace CDPModule1.Server.Controllers
                 fs.Close();
                 System.IO.File.WriteAllBytes(path, file);
 
-                string dat=await ExportPDFToExcel(Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage), path);
+                string dat = await ExportPDFToExcel(Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage), path);
                 var newpath = Path.GetFullPath("C:/Users/Administrator/source/repos/rohitcdp/CDPModule1/Server/htmlfiles/" + Path.GetFileNameWithoutExtension(trustedFileNameForFileStorage) + ".html");
 
                 string d = dat;// System.IO.File.ReadAllText(newpath);
@@ -143,6 +231,30 @@ namespace CDPModule1.Server.Controllers
             }
         }
 
+
+
+
+        //private async Task<string> ExportPDFToExcel(string fileName, string path)
+        //{
+        //    try
+        //    {
+        //        PdfDocument pdf = new PdfDocument(path);
+        //        int pageCount = pdf.Pages.Count;
+        //        pdf.LoadFromFile(path);
+        //        MemoryStream ms = new MemoryStream();
+        //        pdf.SaveToStream(ms, FileFormat.XLSX);
+        //        pdf.SaveToFile(fileName, FileFormat.XLSX);
+        //        var data = System.Text.Encoding.Default.GetString(ms.ToArray());
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+
+        //}
+
+
         private async Task<string> ExportPDFToExcel(string fileName, string path)
         {
             try
@@ -150,8 +262,8 @@ namespace CDPModule1.Server.Controllers
                 PdfDocument pdf = new PdfDocument(path);
                 int pageCount = pdf.Pages.Count;
                 pdf.LoadFromFile(path);
-                MemoryStream ms= new MemoryStream();
-                pdf.SaveToStream(ms,FileFormat.HTML);
+                MemoryStream ms = new MemoryStream();
+                pdf.SaveToStream(ms, FileFormat.HTML);
                 var data = System.Text.Encoding.Default.GetString(ms.ToArray());
                 return data;
             }
@@ -203,3 +315,4 @@ namespace CDPModule1.Server.Controllers
         //}
         //}
         //}
+
