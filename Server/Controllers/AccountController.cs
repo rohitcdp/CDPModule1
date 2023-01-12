@@ -49,7 +49,7 @@ namespace CDPModule1.Server.Controllers
 
         [HttpPost]
         [Route("AddTenant")]
-        [Authorize(Roles = Roles.Admin)]
+       // [Authorize(Roles = Roles.Admin)]
         public ResponseModal CreateTenant([FromBody] Tenant tenant)
         {
             return _accountService.CreateTenant(tenant).Result;

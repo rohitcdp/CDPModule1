@@ -1,0 +1,25 @@
+﻿
+ 
+<th>
+    
+    <div scope="col">
+    
+        @ColumnTitle
+       @* @if (ColumnTitle != "Actions")
+        { 
+            <input class="form-control" placeholder="search" @oninput="OnSearchTextChanged" />
+        }   *@     
+    </div> 
+     
+</th>
+
+    
+@code {
+
+    [Parameter]
+    public string? ColumnTitle { get; set; }
+
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnSearchTextChanged { get; set; }
+
+}

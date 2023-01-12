@@ -1,0 +1,202 @@
+﻿@page "/Campaign"
+@using CDPModule1.Shared
+@using CDPModule1.Shared.Model;
+@using CDPModule1.Shared.View_Model
+@inject HttpClient Http
+
+<PageTitle>Phoenix</PageTitle>
+<EditForm Model="@obj" OnValidSubmit="@CreateCampaign">
+    <DataAnnotationsValidator />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-4 rounded p-3" style="background-color: #26890d">
+                <div class="inputs mb-3">
+                    <label class="font-14 font-weight-bolder dark-blue text-white"><b>Market</b></label>
+                    <select class="form-control w-100 p-1" @onchange="PopulateSelectedMarkets">
+                        <option></option>
+                        @foreach (var item in Markets)
+                        {
+                            <option value="@item.Id">@item.Market_Name</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => obj.Market)" class="text-danger" style="color:red" />
+                    <div class="p-1 row">
+                        <div class="col-lg-2">
+                            <p class="font-10 text-white">selected:</p>
+                        </div>
+                        <div class="col-lg-10">
+                            <input type="text" @bind="marketlist" class="form-control w-100" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="inputs mb-3">
+                    <label class="font-14 font-weight-bolder dark-blue text-white"><b>Target</b></label>
+                    <select class="form-control w-100 p-1" @onchange="PopulateSelectedTargets">
+                        <option></option>
+                        @foreach (var item in targets)
+                        {
+                            <option value="@item.Id">@item.Target_Name</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => obj.Target)" class="text-danger" style="color:red" />
+                    <div class="p-1 row">
+                        <div class="col-lg-2">
+                            <p class="font-10 text-white">selected:</p>
+                        </div>
+                        <div class="col-lg-10">
+                            <input type="text" @bind="targetlist" class="form-control w-100" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="inputs mb-3">
+                    <label class="font-14 font-weight-bolder dark-blue text-white"><b>Brand name</b></label>
+                    <select class="form-control w-100" @onchange="GetBrand">
+                        <option></option>
+                        @foreach (var item in brands)
+                        {
+                            <option value="@item.Id">@item.BrandName</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => obj.BrandName)" class="text-danger" style="color:red" />
+                </div>
+                <div class="inputs row mb-3">
+                    <div class="col-md-6" >
+                        <label class="font-14 font-weight-bolder dark-blue text-white"><b>From date</b></label>
+                    <input type="date" class="form-control w-100" @bind="obj.Fromdate">
+                    <ValidationMessage For="@(() => obj.Fromdate)" class="text-danger" style="color:red" />
+                    </div>
+                    <div class="col-md-6" >
+                        <label class="font-14 font-weight-bolder dark-blue text-white"><b>To date</b></label>
+                        <input type="date" class="form-control w-100" @bind="obj.Todate">
+                        <ValidationMessage For="@(() => obj.Todate)" class="text-danger" style="color:red" />
+                    </div>
+                </div>
+                <div class="inputs mb-3">
+                    <label class="font-14 font-weight-bolder dark-blue text-white"><b>Duration</b></label>
+                    <input type="text" placeholder="Duration" class="form-control w-100" @bind="obj.Duration">
+                    <ValidationMessage For="@(() => obj.Duration)" class="text-danger" style="color:red" />
+                </div>
+                <div class="inputs mb-3">
+                    <label class="font-14 font-weight-bolder dark-blue text-white"><b>Campaign Name</b></label>
+                    <input type="text" placeholder="Duration" class="form-control w-100" @bind="obj.CampaignName">
+                    <ValidationMessage For="@(() => obj.CampaignName)" class="text-danger" style="color:red" />
+                </div>
+                <div class="inputs mb-3 row">
+                    <div class="col-4 text-white">
+                        <input type="submit" class="form-control w-100 btn btn-close-white btn-outline-light" value="Save" />
+                    </div>
+                    <div class="col-8">
+                        <div class="col-4 text-white">
+                            <input type="submit" class="form-control w-100 btn btn-close-white btn-outline-light"  value="Select File" />
+                        </div>
+                        @if (statusCode)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                <span class="text-success">Campaign save successfully.</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</EditForm>
+@code {
+    List<Market> Markets = new List<Market>();
+    List<string> SelectedMarketNames = new List<string>();
+    List<Target> targets = new List<Target>();
+    List<string> SelectedtargetNames = new List<string>();
+    List<Brand> brands = new List<Brand>();
+    public string? marketlist { get; set; }
+    public string? targetlist { get; set; }
+    CampaignView obj = new CampaignView();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCampaigns();
+        await Getmarkets();
+        await Gettargets();
+        await Getbrands();
+    }
+    protected async Task Getmarkets()
+    {
+        var res = await Http.GetAsync("api/CampaignMaster/GetMarkets");
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await res.Content.ReadFromJsonAsync<List<Market>>();
+            Markets = data.OrderBy(o => o.Market_Name).ToList();
+        }
+    }
+    protected async Task Gettargets()
+    {
+        var res = await Http.GetAsync("api/CampaignMaster/GetTargets");
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await res.Content.ReadFromJsonAsync<List<Target>>();
+            targets = data.OrderBy(o => o.Target_Name).ToList();
+        }
+    }
+    protected async Task Getbrands()
+    {
+        var res = await Http.GetAsync("api/CampaignMaster/GetBrands");
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await res.Content.ReadFromJsonAsync<List<Brand>>();
+            brands = data.OrderBy(o => o.BrandName).ToList();
+        }
+    }
+
+    protected void PopulateSelectedMarkets(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        int mid = Convert.ToInt32(args.Value.ToString());
+        var mrkt = Markets.Where(w => w.Id == mid).FirstOrDefault();
+        SelectedMarketNames.Add(mrkt.Market_Name);
+        obj.Market.Add(mrkt.Id);
+        marketlist = string.Join(", ", SelectedMarketNames);
+    }
+    protected void PopulateSelectedTargets(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        int tid = Convert.ToInt32(args.Value.ToString());
+        var trd = targets.Where(w => w.Id == tid).FirstOrDefault();
+        SelectedtargetNames.Add(trd.Target_Name);
+        obj.Target.Add(trd.Id);
+        targetlist = string.Join(", ", SelectedtargetNames);
+    }
+
+    protected void GetBrand(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        obj.BrandName = Convert.ToInt32(args.Value.ToString());
+    }
+
+    public bool statusCode { get; set; }
+    protected async Task<bool> CreateCampaign()
+    {
+        try{
+            var respo = await Http.PostAsJsonAsync("api/CampaignMaster/SaveCampaigning", obj);
+             statusCode = await respo.Content.ReadFromJsonAsync<bool>();
+
+        }catch(Exception ex)
+        {
+            return false;
+        }
+       
+        
+        return true;
+    }
+
+    protected async Task GetCampaigns()
+    {
+        var res = await Http.GetAsync("api/CampaignMaster/GetCampaign");
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await res.Content.ReadFromJsonAsync<List<CampaignMaster>>();
+            var camps = data.OrderBy(o => o.CampaignName).ToList();
+        }
+    }
+}
+
+

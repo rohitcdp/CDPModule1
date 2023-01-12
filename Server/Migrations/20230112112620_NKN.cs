@@ -6,11 +6,70 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CDPModule1.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class NKN : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AgencyInvoiceData",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvoiceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Channel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Program = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Caption = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Day = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Time = table.Column<TimeSpan>(type: "time", nullable: true),
+                    Hour = table.Column<int>(type: "int", nullable: true),
+                    NetRate = table.Column<int>(type: "int", nullable: true),
+                    Dur = table.Column<int>(type: "int", nullable: true),
+                    NetCost = table.Column<int>(type: "int", nullable: true),
+                    GrossRate = table.Column<int>(type: "int", nullable: true),
+                    Daypart = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlanDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comments = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TemplateId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Amount = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AgencyInvoiceData", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "brands",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BrandName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_brands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "campaigns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BrandId = table.Column<int>(type: "int", nullable: false),
+                    Fromdate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Todate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Duration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CampaignName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_campaigns", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "InvoiceTemplate",
                 columns: table => new
@@ -43,7 +102,84 @@ namespace CDPModule1.Server.Migrations
                     table.PrimaryKey("PK_InvoiceTemplateInfo", x => x.Id);
                 });
 
-            
+            migrationBuilder.CreateTable(
+                name: "marketMasters",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SelectedMarket = table.Column<int>(type: "int", nullable: false),
+                    CompaignId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_marketMasters", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "markets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MarketName = table.Column<string>(name: "Market_Name", type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_markets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "targetMasters",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Selectedtarget = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompaignId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_targetMasters", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "targets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TargetName = table.Column<string>(name: "Target_Name", type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_targets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Contact = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telephone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankingDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GstNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PanNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "AgencyBilling",
@@ -98,39 +234,34 @@ namespace CDPModule1.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AgencyInvoiceData",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InvoiceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Channel = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Program = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Caption = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Day = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Time = table.Column<TimeSpan>(type: "time", nullable: true),
-                    Hour = table.Column<int>(type: "int", nullable: true),
-                    NetRate = table.Column<int>(type: "int", nullable: true),
-                    Dur = table.Column<int>(type: "int", nullable: true),
-                    NetCost = table.Column<int>(type: "int", nullable: true),
-                    GrossRate = table.Column<int>(type: "int", nullable: true),
-                    Daypart = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlanDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Comments = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TemplateId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DOB = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AgencyInvoiceData", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AgencyInvoiceData_InvoiceTemplate_Id",
-                        column: x => x.Id,
-                        principalTable: "InvoiceTemplate",
+                        name: "FK_Users_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-           
 
             migrationBuilder.CreateTable(
                 name: "Invoices",
@@ -210,6 +341,15 @@ namespace CDPModule1.Server.Migrations
                 table: "InvoiceData",
                 column: "InvoiceId");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_UserId",
+                table: "Invoices",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId",
+                table: "Users",
+                column: "TenantId");
         }
 
         /// <inheritdoc />
@@ -222,10 +362,28 @@ namespace CDPModule1.Server.Migrations
                 name: "AgencyInvoiceData");
 
             migrationBuilder.DropTable(
+                name: "brands");
+
+            migrationBuilder.DropTable(
+                name: "campaigns");
+
+            migrationBuilder.DropTable(
                 name: "InvoiceData");
 
             migrationBuilder.DropTable(
                 name: "InvoiceTemplateInfo");
+
+            migrationBuilder.DropTable(
+                name: "marketMasters");
+
+            migrationBuilder.DropTable(
+                name: "markets");
+
+            migrationBuilder.DropTable(
+                name: "targetMasters");
+
+            migrationBuilder.DropTable(
+                name: "targets");
 
             migrationBuilder.DropTable(
                 name: "Invoices");
@@ -233,7 +391,11 @@ namespace CDPModule1.Server.Migrations
             migrationBuilder.DropTable(
                 name: "InvoiceTemplate");
 
-           
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
         }
     }
 }

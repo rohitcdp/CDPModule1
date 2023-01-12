@@ -41,7 +41,7 @@
                                                                     <i class="	fas fa-portrait"></i>
 
                                                                 </span>
-                                                                <input placeholder="companyName" @bind="@tenant.Name" class="form-control" />
+                                                                <input placeholder="TenantName" @bind="@tenant.Name" class="form-control" />
                                                                 <ValidationMessage For="@(() => tenant.Name)" class="text-danger" />
                                                             </div>
 
@@ -52,7 +52,7 @@
                                                                     <i class="far fa-address-card "></i>
                                                                     <span class="bi-person"></span>
                                                                 </span>
-                                                                <input placeholder="Address" @bind="@tenant.Email" class="form-control" />
+                                                                <input placeholder="Email" @bind="@tenant.Email" class="form-control" />
                                                                 <ValidationMessage For="@(() => tenant.Email)" class="text-danger" />
 
                                                             </div>
@@ -101,7 +101,7 @@
                                                                     <i class="far fa-address-card "></i>
                                                                     <span class="bi-person"></span>
                                                                 </span>
-                                                                <input placeholder="Address" @bind="@tenant.Contact" class="form-control" />
+                                                                <input placeholder="Contact" @bind="@tenant.Contact" class="form-control" />
                                                                 <ValidationMessage For="@(() => tenant.Contact)" class="text-danger" />
 
                                                             </div>
@@ -196,8 +196,12 @@
         token = await localStorageService.GetItem<string>("token");
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-        tenant = await httpClient.GetFromJsonAsync<Tenant>("api/Tenant/GetTenantById?Id=" + Id);
-        //tenant = await result.Content.ReadFromJsonAsync<Tenant>();
+        if(Id!=null)
+        {
+            
+        
+        tenant = await httpClient.GetFromJsonAsync<Tenant>("api/Tenant/GetTenantById" + Id);
+        }
 
     }
 
