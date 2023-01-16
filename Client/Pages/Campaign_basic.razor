@@ -1,0 +1,111 @@
+﻿@page "/campaign-base"
+@layout MainLayout_3
+<div class="card" style="width: 60rem;">
+    <div class="card-header">
+        <small>COMPAIGN BASICS</small>
+    </div>
+    <div class="card-body">
+<div class="row mb-3">
+    <div class="col-6">
+                <label for="inputClient"><small>Client</small></label>
+        <select id="inputClient" class="form-control">
+            <option selected>-- select clients --</option>
+            <option>...</option>
+        </select>
+    </div>
+    <div class="col-6">
+                <label for="inputTarget"><small>Target</small></label>
+        <select id="inputTarget" class="form-control">
+            <option selected>-- select targets --</option>
+            <option>...</option>
+        </select>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-6">
+                <label for="inputMarkets"><small>Market</small></label>
+        <select id="inputMarkets" class="form-control">
+            <option selected>-- select markets --</option>
+            <option>...</option>
+        </select>
+    </div>
+
+    <div class="col-3">
+                <label for="inputZip"><small>From (campaign period)</small></label>
+        <input type="text" class="form-control" id="inputZip">
+    </div>
+
+    <div class="col-3">
+                <label for="inputZip"><small>To (campaign period)</small></label>
+        <input type="text" class="form-control" id="inputZip">
+    </div>
+
+</div>
+
+
+<div class="row mb-3">
+    <div class="col-6">
+        <div class="form-check form-check-inline" >
+                    <input class="form-check-input" type="radio"  name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                    <label class="form-check-label" for="inlineRadio1"><small>PRE (also for TVCDB maintenance)</small></label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                    <label class="form-check-label" for="inlineRadio2"><small>POST</small></label>
+        </div>
+    </div>
+
+    <div class="col-2">
+
+                <button type="submit" class="btn btn-primary" style="position: absolute;left: 748px;">
+                    <small>Confirm All</small>
+                </button>
+    </div>
+
+    <div class="col-2">
+
+                <button type="submit" class="btn btn-primary" style="position: absolute;left: 858px;">
+                    <small>Reset All</small>
+                </button>
+    </div>
+</div>
+<br />
+<hr />
+
+   <div class="row mb-3">
+
+       <div class="col-6">
+            <div class="card" style="width: 26rem;">
+                    <div class="card-header">
+                        <small>MAINTENANCE</small>
+                    </div>
+                <div class="card-body">
+                        <center><button type="submit" class="btn btn-success" style="width:170px;background-color: black;"><small>CADMUS maintenance</small></button></center>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card" style="width: 28rem;">
+                    <div class="card-header">
+                        <small>RUN</small>
+                    </div>
+                    <div class="card-body">
+                        <center><button type="submit" class="btn btn-success mb-3" style="background-color: black;"><small>Data Acquisition and cost prediction</small></button></center>
+                        <center><button type="submit" class="btn btn-success mb-3" style="background-color: black;"><small>Optimization</small></button></center>
+                        <center><button type="submit" class="btn btn-success mb-3" style="background-color: black;"><small>Market simulation via ABM</small></button></center>
+                    </div>
+                </div>
+            </div>
+
+   </div>
+
+
+</div>
+</div>
+
+
+@code {
+
+}

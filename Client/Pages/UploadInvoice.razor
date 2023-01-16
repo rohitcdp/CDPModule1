@@ -18,7 +18,42 @@
 @inject IApiService ApiService;
 
 <h1>Upload File </h1>
-<div class="row m-1">
+
+
+<div class="card shadow-lg">
+
+    <div class="list-group-item" style=" margin: auto; padding: 20px; width: 100%; max-width: 100%;">
+
+       <label class="col-2">Template Type:</label>
+        <div class="row">
+            
+            <select id="templateValue" class="form-control" @bind="TemplateId">
+                <option value="1">METRONATION CHENNAI TELEVISION</option>
+                <option value="2">TV18 Broadcast Limited</option>
+            </select>
+                <br>
+            <label>Select File :</label>
+            <InputFile OnChange="@uploadPdfNew" id="FileUpload1" class="col-9" />
+             @if(ShowLoader)
+                                {
+                <div class="loader">Loading...</div>
+            
+                                }
+            <br>
+            <div class="text-center">
+                  @if(buttonhidden)
+                                {
+                    <button type="button" @onclick="() =>insertData()" style="background-color:rgb(134,188,37)" class="btn btn-success m-1">Save</button>
+                                }
+
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+<br>
+@*<div class="row m-1">
     <label class="col-2">Template Type:</label>
     <select id="templateValue" class="col-6" @bind="TemplateId">
        @* <option value="1">METRONATION CHENNAI TELEVISION</option>
@@ -30,12 +65,15 @@
     </select>
     <label class="col-2">Select File :</label>
     <InputFile OnChange="@uploadPdfNew" id="FileUpload1" class="col-9" />
-</div>
+</div>*@
 
-<button type="button" @onclick="() =>insertData()" class="btn btn-success m-1">Save</button>
+
 
 @code {
 
+    public int TemplateId { get; set; }
+    public bool buttonhidden { get; set; } = false;
+    public bool ShowLoader { get; set; } = false;
     public Guid TemplateId { get; set; }
 
     public List<List<string>> Data { get; set; }
@@ -163,6 +201,9 @@
     {
         try
         {
+
+            ShowLoader = true;
+            buttonhidden = false;
             var file = inputFileChangeEvent.File;
             byte[] buffer = new byte[file.Size];
             await file.OpenReadStream().ReadAsync(buffer);
@@ -189,7 +230,8 @@
                 ();
 
             Data = responseModal.Data;
-
+            ShowLoader = false;
+            buttonhidden = true;
         }
         catch (Exception ex)
         {
@@ -197,3 +239,42 @@
         }
     }
 }
+<style>
+
+    .loader {
+        width: 250px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: helvetica, arial, sans-serif;
+        text-transform: uppercase;
+        font-weight: 900;
+        color: #0c2642;
+        letter-spacing: 0.2em
+    }
+
+        .loader::before, .loader::after {
+            content: "";
+            display: block;
+            width: 15px;
+            height: 15px;
+            background: #0c2642;
+            position: absolute;
+            -webkit-animation: load 0.7s infinite alternate ease-in-out;
+            animation: load 0.7s infinite alternate ease-in-out
+        }
+
+        .loader::before {
+            top: 0
+        }
+
+        .loader::after {
+            bottom: 0
+        }
+
+    }
+</style>

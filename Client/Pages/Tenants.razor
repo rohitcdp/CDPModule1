@@ -9,7 +9,7 @@
 
 <h3>Tenants</h3>
 
-<button onclick="@CreateNew" class="btn btn-success">Create New Tenant</button>
+<button onclick="@CreateNew" style="background-color:rgb(134,188,37)" class="btn btn-success">Create New Tenant</button>
 @if (TenantList != null)
 {
     <table class="table">
@@ -63,7 +63,7 @@ else
         TenantList = await Reload();
     }
 
-    public void CreateNew() => NavManager.NavigateTo("/add_tenant/", true);
+    public void CreateNew() => NavManager.NavigateTo("/add_tenant", true);
 
     public void OpenEdit(Guid Id) => NavManager.NavigateTo("/add_tenant/"+Id, true);
 

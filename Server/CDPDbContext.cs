@@ -1,4 +1,5 @@
 ﻿using CDPModule1.Shared;
+using CDPModule1.Shared.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace CDPModule1.Server
@@ -16,5 +17,11 @@ namespace CDPModule1.Server
         public DbSet<InvoiceData> InvoiceData { get; set; }
         public DbSet<InvoiceTemplate> InvoiceTemplate { get; set; }
         public DbSet<InvoiceTemplateInfo> InvoiceTemplateInfo { get; set; }
+        public DbSet<Market> markets { get; set; }
+        public DbSet<Shared.Model.Target> targets { get; set; }
+        public DbSet<Brand> brands { get; set; }
+        public DbSet<CampaignMaster> campaigns { get; set; }
+        public DbSet<MarketMaster> marketMasters { get; set; }
+        public DbSet<TargetMaster> targetMasters { get; set; }
     }
 }

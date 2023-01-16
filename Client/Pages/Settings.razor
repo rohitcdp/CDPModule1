@@ -100,15 +100,14 @@ else
 }
 
 @code{
-
     [Parameter]
-    public User user { get; set; }
+    public User user { get; set; } = new User();
 
     protected override async Task OnParametersSetAsync()
     {
         Guid Id = await IApiService.GetLoggedInUserId();
         var result = await IApiService.GetWithAuthAsync("api/User/GetById?Id=" + Id);
-        user = await result.Content.ReadFromJsonAsync<User>();
+        //user = await result.Content.ReadFromJsonAsync<User>();
     }
 
     public async void Update()

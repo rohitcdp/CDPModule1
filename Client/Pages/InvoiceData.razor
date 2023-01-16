@@ -7,55 +7,67 @@
 @inject ILocalStorageService localStorageService;
 @inject NavigationManager NavManager
 
+<div class="card shadow-lg">
 
-<h3>Invoices</h3>
-<select id="templateValue" class="col-6" @bind="TemplateId" >
+    <div class="list-group-item" style=" margin: auto; padding: 20px; width: 100%; max-width: 100%;">
+
+        <label>Search By:</label>
+        <div class="row">
+            <select id="templateValue" class="form-control" @bind="TemplateId">
     <option value="1">METRONATION CHENNAI TELEVISION</option>
     <option value="2">TV18 Broadcast Limited</option>
 </select>
-<button class="btn btn-primary" @onclick="@GetInvoiceData">Apply</button>
+<br>
+            <div class="text-center">
+                <button class="btn btn-primary" style="background-color:rgb(134,188,37)" @onclick="@GetInvoiceData">Apply</button>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+<br>
+
+
+
 @if (InvoiceList != null)
 {
-    <table class="table">
-        <thead>
-            <tr>
+     
 
-                <th>Channel</th>
-                <th>Program</th>
-                <th>Date</th>
-                <th>Day</th>
-                <th>Caption</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var invoice in InvoiceList)
-            {
-                <tr>
 
-                    <td>@invoice.Channel</td>
-                    <td>@invoice.Program</td>
-                    <td>@invoice.Date</td>
-                    <td>@invoice.Day</td>
-                    <td>@invoice.Caption</td>
-                    @*<td>
-            <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
-            <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
-            </td>*@
-                </tr>
-            }
-        </tbody>
-    </table>
+    <GridView Items="FilteredData" ReloadList="IsGridViewFiltered" OnSearchTextChanged="OnSearchTextChanged">
+                <GridColumns>
+                <GridColunm ColumnTitle="Channel"></GridColunm>
+                <GridColunm ColumnTitle="Program"></GridColunm>
+                <GridColunm ColumnTitle="Date"></GridColunm>
+            <GridColunm ColumnTitle="Day"></GridColunm>
+                <GridColunm ColumnTitle="Caption"></GridColunm>
+                </GridColumns>
+            <GridRow Context="InvoiceList">
+                <td>@InvoiceList.Program</td>
+                <td>@InvoiceList.Date</td>
+                <td>@InvoiceList.Day</td>
+                <td>@InvoiceList.Caption</td>
+            </GridRow>
+            </GridView>
 }
-else
-{
-    <p>Loading.........</p>
-}
+
+   else
+    {
+    <p>Loading......</p>
+    }
+
+
+
+
 @code {
-
+    //[Parameter]
+    public List<AgencyInvoiceData> InvoiceList { get; set; }
+    public bool IsGridViewFiltered { get; set; }
+    List<AgencyInvoiceData> FilteredData;
     public int TemplateId { get; set; }
 
-    [Parameter]
-    public List<AgencyInvoiceData> InvoiceList { get; set; }
+
 
     public string token = string.Empty;
 
@@ -63,6 +75,7 @@ else
     {
         token = await localStorageService.GetItem<string>("token");
         InvoiceList = await Reload();
+        FilteredData = InvoiceList;
     }
 
     public async Task GetInvoiceData()
@@ -72,6 +85,8 @@ else
         var result = await httpClient.GetAsync("api/File/GetAllAgencyInvoiceByTemplate?templateId=" + TemplateId);
         var item = result.Content.ReadAsStringAsync();
         InvoiceList= await result.Content.ReadFromJsonAsync<List<AgencyInvoiceData>>();
+        FilteredData = InvoiceList;
+        this.StateHasChanged();
     }
 
     // public void CreateNew() => NavManager.NavigateTo("/add_tenant/", true);
@@ -98,6 +113,28 @@ else
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
         var result = await httpClient.GetAsync("api/File/GetAllAgencyInvoice");
         var item = result.Content.ReadAsStringAsync();
+       
+    
         return await result.Content.ReadFromJsonAsync<List<AgencyInvoiceData>>();
+      
     }
+    private void OnSearchTextChanged(ChangeEventArgs changeEventArgs)
+    {
+        try
+        {
+            string searchText = changeEventArgs.Value.ToString();
+            IsGridViewFiltered = true;
+            FilteredData = InvoiceList.Where(x => x.Channel.ToLower().ToString().Contains(searchText) ||
+            (x.Channel != null && x.Channel.ToLower().ToString().Contains(searchText))).ToList();
+        }
+        catch (Exception ex)
+        {
+
+
+
+        }
+    }
+
+
+
 }

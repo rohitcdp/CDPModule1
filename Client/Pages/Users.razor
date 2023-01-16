@@ -34,7 +34,7 @@
                     <td>@user.UserType</td>
                     <td>@user.Gender</td>
                     <td>@user.Address</td>
-                    @*<td>@user.Tenant.Name</td>*@
+                    <td>@user.Tenant.Name</td>
                     <td>
                         <button class="btn-info" @onclick="() => OpenEdit(user.Id)">Edit</button>
                         <button class="btn-danger" @onclick="() => Delete(user.Id)">Delete</button>

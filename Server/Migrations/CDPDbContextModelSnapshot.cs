@@ -397,6 +397,123 @@ namespace CDPModule1.Server.Migrations
                     b.ToTable("InvoiceTemplateInfo");
                 });
 
+            modelBuilder.Entity("CDPModule1.Shared.Model.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("brands");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.Model.CampaignMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CampaignName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Duration")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fromdate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Todate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("campaigns");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.Model.Market", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Market_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("markets");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.Model.MarketMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SelectedMarket")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("marketMasters");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.Model.Target", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Target_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("targets");
+                });
+
+            modelBuilder.Entity("CDPModule1.Shared.Model.TargetMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompaignId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Selectedtarget")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("targetMasters");
+                });
+
             modelBuilder.Entity("CDPModule1.Shared.Tenant", b =>
                 {
                     b.Property<Guid>("Id")

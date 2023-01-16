@@ -1,0 +1,313 @@
+﻿@typeparam TItem
+@inject IJSRuntime JsRuntime
+
+<style>
+    .fixTableHead {
+        overflow-y: auto;
+        height: 500px;
+    }
+
+        .fixTableHead thead {
+            position: sticky;
+            top: 0;
+        }
+
+    /* table {
+                            border-collapse: collapse;
+                            width: 100%;
+                            height: 500PX;
+                        }
+
+                        th,
+                        td {
+
+                            padding: 10px;
+                            height: 10px;
+                            max-height: 10px;
+                            border: 2px solid #FFFF;
+                        }
+
+                        th {
+                            background: #ABDD93;
+                        }*/
+</style>
+
+<div class="card">
+<section class="py-2 " style="color:white">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="main-body">
+            <div class="col-lg-1">
+                <label for="PageSize" class="control-label mt-2">Page Size</label>
+            </div>
+            <div class="col-lg-1">
+                <select class="form-control" @bind=@PageSize>
+                    <option value="1">1</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
+            <div class="col-lg-7">
+            </div>
+            <div class="col-lg-3">
+                <input class="form-control " placeholder="search" @oninput="OnSearchTextChanged" />
+            </div>
+        </div>
+   </div>
+   </div>
+
+
+        @*  width:@((windowWidth-350).ToString()+"px")*@
+
+        <div class="card-body" style="padding: 10px 0px 10px 10px;">
+            <div class="col-12 row table-responsive">
+                <div class="scrollmenu" style="width:@((windowWidth-350).ToString()+"px"); padding: 10px 0px 10px 10px;">
+                    <div class="card-headerr p-0" style="color:white;">
+                        <div class="fixTableHead">
+                            <table class="table" border="0">
+                                @*//border="0"*@
+
+                                <thead style="background-color:gray;color:white">
+
+                                    <tr>
+                                        @if (ShowCheckBox)
+                                        {
+                                            <th><input type="checkbox"  @bind="SelectAll" @onclick="CheckUnCheckAll" /></th>
+                                        }
+                                        <th>#</th>
+                                        @GridColumns
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody style="color:black">
+
+                                    @foreach (var item in CurrPageindexes)
+                                    {
+                                        <tr>
+                                            @if (ShowCheckBox)
+                                            {
+                                                <td><input type="checkbox" @bind="item.IsChecked"/></td>
+                                            }
+
+                                            <td>
+                                                @item.Index
+                                            </td>
+                                            @GridRow(ItemList[item.Index -(PageSize * CurrentPage+1)])
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="card-footer">
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
+            @for (int i = 0; i < TotalPages; i++)
+            {
+                var pageNumber = i;
+                <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
+                    @onclick="@(e => UpdateList(pageNumber))">
+                    @(i + 1)
+                </button>
+            }
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
+        </div>
+    </div>
+
+ </section>
+ </div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnSearchTextChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment GridColumns { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> GridRow { get; set; }
+
+    [Parameter]
+    public bool ShowCheckBox { get; set; } = false;
+
+    [Parameter]
+    public List<TItem> Items
+    {
+        get
+        {
+            return _Items;
+        }
+        set
+        {
+
+            if (value != null && _Items != value)
+            {
+                _Items = value;
+                indexes = new CheckGridIndex[Items.Count];
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    indexes[i] = new CheckGridIndex() { Index = i + 1 };
+                }
+            }
+
+        }
+    }
+    List<TItem> _Items;
+
+    public List<TItem> ItemList { get; set; }
+
+    CheckGridIndex[] CurrPageindexes { get; set; } = new CheckGridIndex[0];
+    CheckGridIndex[] indexes { get; set; } = new CheckGridIndex[0];
+
+    [Parameter]
+    public List<TItem> SelectedItems
+    {
+        get
+        {
+            int[] selIndexes = indexes.Where(x => x.IsChecked == true).Select(x => x.Index).ToArray();
+
+            _SelectedItems = new List<TItem>();
+            for (var i = 0; i < Items.Count(); i++)
+            {
+                if (selIndexes.Contains(i + 1))
+                {
+
+                    _SelectedItems.Add(Items[i]);
+                }
+            }
+            return _SelectedItems;
+        }
+        set
+        {
+            _SelectedItems = value;
+        }
+    }
+    List<TItem> _SelectedItems;
+
+
+    public async Task CheckUnCheckAll()
+    {
+
+        foreach (var item in CurrPageindexes)
+        {
+            item.IsChecked = !SelectAll;
+        }
+
+
+    }
+   
+
+    
+
+    int _pagesize = 10;
+    public int PageSize
+    {
+        get
+        {
+            return _pagesize;
+        }
+        set
+        {
+            _pagesize = value;
+
+            if (Items != null)
+            {
+                ItemList = Items.Take(PageSize).ToList();
+                CurrPageindexes = indexes.Take(PageSize).ToArray();
+                TotalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
+            }
+        }
+    }
+
+    bool SelectAll { get; set; }
+
+    public int TotalPages { get; set; }
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public bool ReloadList { get; set; }
+
+    private IJSObjectReference jsModule;
+
+    public int windowHeight, windowWidth;
+    protected override async Task OnInitializedAsync()
+    {
+        PageSize = 10;
+
+       // jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/windowparam.js");
+
+        //var dimension = await jsModule.InvokeAsync<WindowDimensions>("getWindowSize");
+        //windowHeight = dimension.Height;
+        //if (windowWidth != dimension.Width)
+        //{
+        //    windowWidth = dimension.Width;
+        //    // this.StateHasChanged();
+        //}
+
+        await base.OnInitializedAsync();
+    }
+
+    public class WindowDimensions
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender && ReloadList)
+        {
+            UpdateList();
+            ReloadList = false;
+
+            StateHasChanged();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    private void UpdateList(int pageNumber = 0)
+    {
+        if (Items != null)
+        {
+            //pageNumber * pageSize -> take 5
+            ItemList = Items.Skip(pageNumber * PageSize).Take(PageSize).ToList();
+            CurrPageindexes = indexes.Skip(pageNumber * PageSize).Take(PageSize).ToArray();
+            TotalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
+            CurrentPage = pageNumber;
+        }
+    }
+
+    private void NavigateTo(string direction)
+    {
+        if (direction == "prev" && CurrentPage != 0)
+            CurrentPage -= 1;
+        if (direction == "next" && CurrentPage != TotalPages - 1)
+            CurrentPage += 1;
+        if (direction == "first")
+            CurrentPage = 0;
+        if (direction == "last")
+            CurrentPage = TotalPages - 1;
+
+        UpdateList(CurrentPage);
+    }
+
+
+}
+
+
+
+
