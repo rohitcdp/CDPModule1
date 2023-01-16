@@ -268,6 +268,14 @@ namespace CDPModule1.Server.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetAllInvoiceTemplate")]
+        [Authorize]
+        public async Task<List<InvoiceTemplate>> GetAllInvoiceTemplate()
+        {
+            return await cdpContext.InvoiceTemplate.ToListAsync();
+        }
+
         //private async Task<string> ExportPDFToExcel(string fileName, string path)
         //{
         //    try

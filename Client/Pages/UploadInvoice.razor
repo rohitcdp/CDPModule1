@@ -21,8 +21,12 @@
 <div class="row m-1">
     <label class="col-2">Template Type:</label>
     <select id="templateValue" class="col-6" @bind="TemplateId">
-        <option value="1">METRONATION CHENNAI TELEVISION</option>
-        <option value="2">TV18 Broadcast Limited</option>
+       @* <option value="1">METRONATION CHENNAI TELEVISION</option>
+        <option value="2">TV18 Broadcast Limited</option>*@
+        @foreach (var dl in @InvoiceTemplateList)
+        {
+            <option value="@dl.Id">@dl.TemplateName</option>
+        }
     </select>
     <label class="col-2">Select File :</label>
     <InputFile OnChange="@uploadPdfNew" id="FileUpload1" class="col-9" />
@@ -32,9 +36,17 @@
 
 @code {
 
-    public int TemplateId { get; set; }
+    public Guid TemplateId { get; set; }
 
     public List<List<string>> Data { get; set; }
+
+    public List<InvoiceTemplate> InvoiceTemplateList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage listRes = await ApiService.GetWithAuthAsync("api/File/GetAllInvoiceTemplate");
+        InvoiceTemplateList = await listRes.Content.ReadFromJsonAsync<List<InvoiceTemplate>>();
+    }
 
     public async Task insertData()
     {
@@ -49,7 +61,7 @@
                 {
                     string[] a = list.ToArray();
 
-                    if (TemplateId == 1)
+                    if (TemplateId == new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181353"))
                     {
 
                         if (list.Count < 8)
@@ -64,16 +76,15 @@
 
                             AgencyInvoiceData agd = new AgencyInvoiceData
                                 {
-
                                     Program = a[0].ToString().Replace("\"", ""),
                                     Channel = a[6].ToString().Replace("\"", ""),
                                     Day = a[3].ToString().Replace("\"", ""),
                                     Date = a[2].ToString().Replace("\"", ""),
-                                    TemplateId = new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181353"),
+                                    TemplateId = TemplateId,
                                     //agd.NetRate = Convert.ToInt32(a[5]);
                                     Time = TimeSpan.Parse(a[4].ToString().Replace("\"", "")),
                                 };
-
+                                
 
                             lstAgd.Add(agd);
 
@@ -84,7 +95,7 @@
 
 
 
-                    if (TemplateId == 2)
+                    if (TemplateId == new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181354"))
                     {
 
                         if (a[0].ToString().Replace("\"", "").Trim() == "" || a[2].ToString().Replace("\"", "").Trim() == "" || a[6].ToString().Replace("\"", "").Trim() == "")
@@ -94,9 +105,6 @@
 
                         if (list.Count == 7)
                         {
-
-
-
                             AgencyInvoiceData agd = new AgencyInvoiceData
                                 {
 
@@ -105,11 +113,9 @@
                                     Dur = Convert.ToInt32(a[4].ToString().Replace("\"", "")),
                                     Amount = Convert.ToDouble(a[6].ToString().Replace("\"", "")),
                                     Date = a[0].ToString().Replace("\"", ""),
-                                    TemplateId = new Guid("86BD5AAB-4C99-40F3-FA0A-08DAF0181354"),
+                                    TemplateId = TemplateId,
                                 };
                             lstAgd.Add(agd);
-
-
                         }
 
                         if (list.Count == 8)
@@ -166,7 +172,7 @@
 
             httpClient.DefaultRequestHeaders.Clear();
             string token = await localStorageService.GetItem<string>
-    ("token");
+             ("token");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
 
